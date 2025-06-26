@@ -125,7 +125,7 @@ def run_wordpress_checks(url):
         resp = requests.get(url, timeout=10, verify=False)
     except Exception:
         resp = None
-    # Run WPScan once and parse output
+    # Try WPScan with API key first, fallback to no API key
     docker_cmd = [
         'docker', 'run', '--rm',
         'wpscanteam/wpscan',
@@ -134,7 +134,8 @@ def run_wordpress_checks(url):
         '--format', 'json',
         '--enumerate', 'u',
         '--random-user-agent',
-        '--throttle', '1'
+        '--throttle', '1',
+        '--api-token', 'yuaBGak9WXHx6UPa6svSifZLFBEohwgEXYsl3dxdb3M'
     ]
     try:
         wpscan_result = subprocess.run(docker_cmd, capture_output=True, text=True, timeout=600)
@@ -143,7 +144,25 @@ def run_wordpress_checks(url):
         except Exception:
             wpscan_output = wpscan_result.stdout
     except Exception as e:
-        wpscan_output = str(e)
+        # Fallback: try again without API key
+        docker_cmd_no_api = [
+            'docker', 'run', '--rm',
+            'wpscanteam/wpscan',
+            '--url', url,
+            '--no-update',
+            '--format', 'json',
+            '--enumerate', 'u',
+            '--random-user-agent',
+            '--throttle', '1'
+        ]
+        try:
+            wpscan_result = subprocess.run(docker_cmd_no_api, capture_output=True, text=True, timeout=600)
+            try:
+                wpscan_output = json.loads(wpscan_result.stdout)
+            except Exception:
+                wpscan_output = wpscan_result.stdout
+        except Exception as e2:
+            wpscan_output = str(e2)
     # Prepare resp dict for passing WPScan output
     resp_dict = {'headers': resp.headers if resp else {}, 'text': resp.text if resp else '', 'wpscan_output': wpscan_output}
     wp_dir = os.path.join(os.path.dirname(__file__), 'wordpress')
