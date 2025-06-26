@@ -114,8 +114,11 @@ WORDPRESS_TEMPLATE = '''
 
 def run_wordpress_checks(url):
     results = []
-    # Try to get a base response for header checks
     import requests
+    import json
+    from datetime import datetime
+    from urllib.parse import urlparse
+    import os
     try:
         resp = requests.get(url, timeout=10, verify=False)
     except Exception:
@@ -131,6 +134,16 @@ def run_wordpress_checks(url):
         except Exception as e:
             result = {'name': check_file, 'status': 'error', 'description': str(e), 'evidence': None, 'risk': 1}
         results.append(result)
+    # Save results to results folder with date and domain in filename
+    parsed = urlparse(url)
+    domain = parsed.netloc.replace(':', '_')
+    date_str = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f"wp_{date_str}_{domain}.json"
+    results_dir = os.path.join(os.path.dirname(__file__), 'results')
+    os.makedirs(results_dir, exist_ok=True)
+    filepath = os.path.join(results_dir, filename)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump({'url': url, 'results': results}, f, indent=2)
     return results
 
 @app.route('/', methods=['GET', 'POST'])
