@@ -11,9 +11,19 @@ def run(url, resp=None):
             '--no-update',
             '--format', 'json',
             '--enumerate', 'u',
-            '--random-user-agent'
+            '--random-user-agent',
+            '--throttle', '1'
         ]
-        result = subprocess.run(docker_cmd, capture_output=True, text=True, timeout=180)
+        try:
+            result = subprocess.run(docker_cmd, capture_output=True, text=True, timeout=600)
+        except subprocess.TimeoutExpired:
+            return {
+                'name': 'Scan with WPScan (Docker)',
+                'status': 'error',
+                'description': 'WPScan timed out after 10 minutes. The target may be blocking or very slow. Try increasing --throttle or check network connectivity.',
+                'evidence': None,
+                'risk': 1
+            }
         try:
             data = json.loads(result.stdout)
             # If scan_aborted, show a clear message
