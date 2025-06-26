@@ -119,10 +119,33 @@ def run_wordpress_checks(url):
     from datetime import datetime
     from urllib.parse import urlparse
     import os
+    import subprocess
+    # Get base response for header checks
     try:
         resp = requests.get(url, timeout=10, verify=False)
     except Exception:
         resp = None
+    # Run WPScan once and parse output
+    docker_cmd = [
+        'docker', 'run', '--rm',
+        'wpscanteam/wpscan',
+        '--url', url,
+        '--no-update',
+        '--format', 'json',
+        '--enumerate', 'u',
+        '--random-user-agent',
+        '--throttle', '1'
+    ]
+    try:
+        wpscan_result = subprocess.run(docker_cmd, capture_output=True, text=True, timeout=600)
+        try:
+            wpscan_output = json.loads(wpscan_result.stdout)
+        except Exception:
+            wpscan_output = wpscan_result.stdout
+    except Exception as e:
+        wpscan_output = str(e)
+    # Prepare resp dict for passing WPScan output
+    resp_dict = {'headers': resp.headers if resp else {}, 'text': resp.text if resp else '', 'wpscan_output': wpscan_output}
     wp_dir = os.path.join(os.path.dirname(__file__), 'wordpress')
     check_files = [f for f in os.listdir(wp_dir) if f.startswith('check_') and f.endswith('.py')]
     check_files.sort()
@@ -130,7 +153,11 @@ def run_wordpress_checks(url):
         mod_name = f"wordpress.{check_file[:-3]}"
         mod = importlib.import_module(mod_name)
         try:
-            result = mod.run(url, resp)
+            # Pass WPScan output to WPScan, core, and theme vuln checks
+            if check_file in ['check_05_wpscan.py', 'check_06_wp_vulns.py', 'check_07_theme_vulns.py']:
+                result = mod.run(url, resp_dict)
+            else:
+                result = mod.run(url, resp)
         except Exception as e:
             result = {'name': check_file, 'status': 'error', 'description': str(e), 'evidence': None, 'risk': 1}
         results.append(result)
