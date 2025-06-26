@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  vulnscanner:
+    build: .
+    container_name: vulnscanner
+    working_dir: /app
+    command: python main.py
+    volumes:
+      - .:/app
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONUNBUFFERED=1

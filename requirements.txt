@@ -1,0 +1,8 @@
+requests
+beautifulsoup4
+webtech
+flask
+python-Wappalyzer
+requests_html
+setuptools
+lxml_html_clean

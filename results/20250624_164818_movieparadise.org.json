@@ -1,0 +1,402 @@
+{
+  "url": "https://movieparadise.org",
+  "results": [
+    {
+      "name": "Start scan",
+      "status": "pass",
+      "description": "Scan started",
+      "evidence": "https://movieparadise.org",
+      "risk": 1
+    },
+    {
+      "name": "Missing HTTP header - Referrer-Policy",
+      "status": "fail",
+      "description": "Checks for Referrer-Policy header",
+      "evidence": null,
+      "risk": 2
+    },
+    {
+      "name": "HttpOnly flag of cookie",
+      "status": "fail",
+      "description": "Checks if cookies have HttpOnly flag",
+      "evidence": [
+        "starstruck_5a8b553e3829c77b88c8661489cc6dbb"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Missing HTTP header - Content-Security-Policy and Security.txt",
+      "status": "fail",
+      "description": "Checks for Content-Security-Policy header and .well-known/security.txt file",
+      "evidence": {
+        "Content-Security-Policy": null,
+        "security.txt_present": false
+      },
+      "risk": 4
+    },
+    {
+      "name": "Detect email addresses on page",
+      "status": "fail",
+      "description": "Detects email addresses in page content, mailto links, and source",
+      "evidence": [
+        "MV5BMWZhMTE3MDEtYjA4ZS00ODU3LThlYTEtMzBkMThhMzFhYzU5XkEyXkFqcGdeQXVyMTYzNTE3NDA@._V1_UY268_CR80182268_AL_.jpg"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Detect mixed content (HTTP inside HTTPS)",
+      "status": "pass",
+      "description": "Detects HTTP resources loaded in HTTPS pages",
+      "evidence": [],
+      "risk": 1
+    },
+    {
+      "name": "Detect website technologies",
+      "status": "pass",
+      "description": "Detects technologies used by the website (Wappalyzer)",
+      "evidence": [
+        "Cloudflare",
+        "jQuery Migrate",
+        "Select2",
+        "Google Font API",
+        "MySQL",
+        "jQuery",
+        "PHP",
+        "reCAPTCHA",
+        "Font Awesome",
+        "WordPress"
+      ],
+      "risk": 1
+    },
+    {
+      "name": "check_08_cve_server_software.py",
+      "status": "error",
+      "description": "no such group",
+      "evidence": null
+    },
+    {
+      "name": "Client access policies",
+      "status": "pass",
+      "description": "Checks for crossdomain.xml and clientaccesspolicy.xml",
+      "evidence": {
+        "crossdomain.xml": "Missing",
+        "clientaccesspolicy.xml": "Missing"
+      },
+      "risk": 1
+    },
+    {
+      "name": "Check if robots.txt exists",
+      "status": "fail",
+      "description": "Checks for robots.txt file and reports its presence/content",
+      "evidence": "User-agent: *\r\nDisallow: ",
+      "risk": 2
+    },
+    {
+      "name": "Check if .well-known/security.txt exists",
+      "status": "fail",
+      "description": "Checks for .well-known/security.txt file and reports its presence/content",
+      "evidence": "security.txt missing",
+      "risk": 2
+    },
+    {
+      "name": "Check for untrusted SSL certificates",
+      "status": "pass",
+      "description": "Checks for SSL certificate trust issues",
+      "evidence": "SSL certificate is trusted.",
+      "risk": 1
+    },
+    {
+      "name": "Check if HTTP TRACE/DEBUG methods are enabled",
+      "status": "pass",
+      "description": "Checks for TRACE/DEBUG HTTP methods",
+      "evidence": {
+        "TRACE": "not allowed",
+        "DEBUG": "HTTP 403"
+      },
+      "risk": 1
+    },
+    {
+      "name": "Check if OPTIONS method is enabled",
+      "status": "pass",
+      "description": "Checks for OPTIONS HTTP method and reports Allow header",
+      "evidence": {
+        "status_code": 200,
+        "allow_header": ""
+      },
+      "risk": 1
+    },
+    {
+      "name": "Enforce HTTPS-only",
+      "status": "pass",
+      "description": "Checks if HTTP redirects to HTTPS",
+      "evidence": {
+        "original_url": "http://movieparadise.org",
+        "final_url": "https://movieparadise.org/",
+        "redirect_chain": [
+          "http://movieparadise.org/",
+          "https://movieparadise.org/"
+        ]
+      },
+      "risk": 1
+    },
+    {
+      "name": "Detect directory listing",
+      "status": "pass",
+      "description": "Detects if directory listing is enabled",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect unencrypted password forms",
+      "status": "pass",
+      "description": "Detects password forms not using HTTPS",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect error messages in responses",
+      "status": "fail",
+      "description": "Detects error messages in HTTP responses",
+      "evidence": [
+        "error"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Detect debug messages",
+      "status": "pass",
+      "description": "Detects debug messages in HTML/JS",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect HTML code comments",
+      "status": "fail",
+      "description": "Detects HTML comments in page source",
+      "evidence": [
+        " Google tag (gtag.js) ",
+        " end search ",
+        " end dt_user "
+      ],
+      "risk": 2
+    },
+    {
+      "name": "Missing HTTP header - Strict-Transport-Security",
+      "status": "pass",
+      "description": "Checks for HSTS header",
+      "evidence": "max-age=31536000",
+      "risk": 1
+    },
+    {
+      "name": "Missing HTTP header - X-Content-Type-Options",
+      "status": "pass",
+      "description": "Checks for X-Content-Type-Options header",
+      "evidence": "nosniff",
+      "risk": 1
+    },
+    {
+      "name": "Missing HTTP header - Feature/Permissions-Policy",
+      "status": "fail",
+      "description": "Checks for Permissions-Policy or Feature-Policy header",
+      "evidence": {
+        "Permissions-Policy": null,
+        "Feature-Policy": null
+      },
+      "risk": 2
+    },
+    {
+      "name": "Detect passwords in URL query string",
+      "status": "pass",
+      "description": "Detects password values in URL",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Cookie domain too loosely scoped",
+      "status": "pass",
+      "description": "Checks if cookie domain is too broad (e.g., .example.com)",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect cross-domain JavaScript inclusions",
+      "status": "fail",
+      "description": "Detects JS loaded from other domains",
+      "evidence": [
+        "https://www.googletagmanager.com/gtag/js?id=G-LJ00169NZY",
+        "https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=onload&ver=6.8.1"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Internal error code in response",
+      "status": "pass",
+      "description": "Checks for 5xx error codes",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Missing Secure flag on cookie",
+      "status": "fail",
+      "description": "Checks if cookies have Secure flag",
+      "evidence": [
+        {
+          "name": "starstruck_5a8b553e3829c77b88c8661489cc6dbb",
+          "domain": "movieparadise.org"
+        }
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Detect login interfaces",
+      "status": "fail",
+      "description": "Detects login forms or endpoints",
+      "evidence": {
+        "forms": [
+          {
+            "action": null,
+            "id": "dooplay_login_user",
+            "name": null
+          }
+        ],
+        "links": [
+          "https://movieparadise.org/wp-login.php?action=lostpassword"
+        ]
+      },
+      "risk": 2
+    },
+    {
+      "name": "Verify secure password submission",
+      "status": "pass",
+      "description": "Checks if password forms submit over HTTPS",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect sensitive data in HTML",
+      "status": "fail",
+      "description": "Detects SSNs, card numbers in HTML",
+      "evidence": {
+        "ssns": [],
+        "credit_cards": [
+          "9101112131415",
+          "16171819202122",
+          "23242526272829"
+        ]
+      },
+      "risk": 5
+    },
+    {
+      "name": "Detect unsafe Content-Security-Policy config",
+      "status": "info",
+      "description": "Checks for unsafe CSP settings",
+      "evidence": "No CSP header present",
+      "risk": 1
+    },
+    {
+      "name": "Detect exposed OpenAPI or Swagger files",
+      "status": "pass",
+      "description": "Checks for openapi.json or swagger.json",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect file upload fields",
+      "status": "pass",
+      "description": "Detects file upload forms",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Test for SQLi via parameter injection",
+      "status": "info",
+      "description": "No query parameters to test for SQLi",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect password values in later response",
+      "status": "fail",
+      "description": "Detects password values in HTTP response",
+      "evidence": [
+        "hover,.menuresp"
+      ],
+      "risk": 5
+    },
+    {
+      "name": "Path disclosure in error messages",
+      "status": "fail",
+      "description": "Detects file path disclosure in errors",
+      "evidence": [
+        "mouse.min.js",
+        "resizable.min.js",
+        "\\u200b\\udb40",
+        "front.scripts.min.js",
+        "\\udb40\\udc7f",
+        "main.js",
+        "\\ud83c\\udff4",
+        "lazyload.js",
+        "\\u26a7\\ufe0f",
+        "\\udb40\\udc65",
+        "\\.0\\.1410",
+        "\\udc67\\u200b",
+        "core.min.js",
+        "\\u200d\\ud83d",
+        "controlgroup.min.js",
+        "front.ajax.min.js",
+        "api.js",
+        "\\ufe0f\\u200d",
+        "\\ud83c\\udff3",
+        "\\udb40\\udc67",
+        "button.min.js",
+        "draggable.min.js",
+        "owlcarousel.js",
+        "pwsscrollbar.js",
+        "dialog.min.js",
+        "\\udb40\\udc6e",
+        "\\ud83c\\uddfa",
+        "\\t\\t",
+        "isrepeater.js",
+        "checkboxradio.min.js",
+        "jquery.min.js",
+        "\\u200b\\ud83c",
+        "idtabs.js",
+        "cookie.js",
+        "select2.js",
+        "jquery-migrate.min.js",
+        "bbspoiler.js",
+        "\\ufe0f\\u200b",
+        "\\u200b\\ud83d",
+        "\\ud83c\\uddf3",
+        "\\udc65\\u200b",
+        "\\ud83d\\udc26",
+        "passster-public.min.js",
+        "\\udb40\\udc62",
+        "dialog.js",
+        "front.livesearch.min.js",
+        "\\r\\n"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Session token in URL",
+      "status": "pass",
+      "description": "Detects session tokens in URL query or fragment",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Discovery of exposed API endpoints",
+      "status": "fail",
+      "description": "Detects exposed API endpoints (e.g., /api, /v1, /graphql)",
+      "evidence": {
+        "https://movieparadise.org/api/": "<!DOCTYPE html>\r\n<html lang=\"en-US\">\r\n<head>\r\n<meta name=\"rapidgator\" content=\"02b15c48da0c571f27f1732ea4cdeb8d58171447\"/>\r\n<meta name=\"rapidgator\" content=\"01f8030f6012ffe87c1d00eb49338c1987212be9\"/>\r\n<!-- Google tag (gtag.js) -->\r\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-LJ00169NZY\"></script>\r\n<script>\r\n  window.dataLayer = window.dataLayer || [];\r\n  function gtag(){dataLayer.push(arguments);}\r\n  gtag('js', new Date());\r\n\r\n  gtag('config', 'G-LJ00169NZY');\r\n</script>\r\n ",
+        "https://movieparadise.org/api/v2/": "<!DOCTYPE html>\r\n<html lang=\"en-US\">\r\n<head>\r\n<meta name=\"rapidgator\" content=\"02b15c48da0c571f27f1732ea4cdeb8d58171447\"/>\r\n<meta name=\"rapidgator\" content=\"01f8030f6012ffe87c1d00eb49338c1987212be9\"/>\r\n<!-- Google tag (gtag.js) -->\r\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-LJ00169NZY\"></script>\r\n<script>\r\n  window.dataLayer = window.dataLayer || [];\r\n  function gtag(){dataLayer.push(arguments);}\r\n  gtag('js', new Date());\r\n\r\n  gtag('config', 'G-LJ00169NZY');\r\n</script>\r\n ",
+        "https://movieparadise.org/v2/": "<!DOCTYPE html>\r\n<html lang=\"en-US\">\r\n<head>\r\n<meta name=\"rapidgator\" content=\"02b15c48da0c571f27f1732ea4cdeb8d58171447\"/>\r\n<meta name=\"rapidgator\" content=\"01f8030f6012ffe87c1d00eb49338c1987212be9\"/>\r\n<!-- Google tag (gtag.js) -->\r\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-LJ00169NZY\"></script>\r\n<script>\r\n  window.dataLayer = window.dataLayer || [];\r\n  function gtag(){dataLayer.push(arguments);}\r\n  gtag('js', new Date());\r\n\r\n  gtag('config', 'G-LJ00169NZY');\r\n</script>\r\n ",
+        "https://movieparadise.org/rest/": "<!DOCTYPE html>\r\n<html lang=\"en-US\">\r\n<head>\r\n<meta name=\"rapidgator\" content=\"02b15c48da0c571f27f1732ea4cdeb8d58171447\"/>\r\n<meta name=\"rapidgator\" content=\"01f8030f6012ffe87c1d00eb49338c1987212be9\"/>\r\n<!-- Google tag (gtag.js) -->\r\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-LJ00169NZY\"></script>\r\n<script>\r\n  window.dataLayer = window.dataLayer || [];\r\n  function gtag(){dataLayer.push(arguments);}\r\n  gtag('js', new Date());\r\n\r\n  gtag('config', 'G-LJ00169NZY');\r\n</script>\r\n ",
+        "https://movieparadise.org/swagger": "<!DOCTYPE html>\r\n<html lang=\"en-US\">\r\n<head>\r\n<meta name=\"rapidgator\" content=\"02b15c48da0c571f27f1732ea4cdeb8d58171447\"/>\r\n<meta name=\"rapidgator\" content=\"01f8030f6012ffe87c1d00eb49338c1987212be9\"/>\r\n<!-- Google tag (gtag.js) -->\r\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-LJ00169NZY\"></script>\r\n<script>\r\n  window.dataLayer = window.dataLayer || [];\r\n  function gtag(){dataLayer.push(arguments);}\r\n  gtag('js', new Date());\r\n\r\n  gtag('config', 'G-LJ00169NZY');\r\n</script>\r\n "
+      },
+      "risk": 3
+    }
+  ]
+}

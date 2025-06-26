@@ -1,0 +1,410 @@
+{
+  "url": "https://www.bigdavesbagels.com/",
+  "results": [
+    {
+      "name": "Start scan",
+      "status": "pass",
+      "description": "Scan started",
+      "evidence": "https://www.bigdavesbagels.com/",
+      "risk": 1
+    },
+    {
+      "name": "Missing HTTP header - Referrer-Policy",
+      "status": "fail",
+      "description": "Checks for Referrer-Policy header",
+      "evidence": null,
+      "risk": 2
+    },
+    {
+      "name": "HttpOnly flag of cookie",
+      "status": "fail",
+      "description": "Checks if cookies have HttpOnly flag",
+      "evidence": [
+        "crumb"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Missing HTTP header - Content-Security-Policy and Security.txt",
+      "status": "fail",
+      "description": "Checks for Content-Security-Policy header and .well-known/security.txt file",
+      "evidence": {
+        "Content-Security-Policy": null,
+        "security.txt_present": false
+      },
+      "risk": 4
+    },
+    {
+      "name": "Detect email addresses on page",
+      "status": "fail",
+      "description": "Detects email addresses in page content, mailto links, and source",
+      "evidence": [
+        "support@spoton.com",
+        "bigdavesbagels@gmail.com"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Detect mixed content (HTTP inside HTTPS)",
+      "status": "fail",
+      "description": "Detects HTTP resources loaded in HTTPS pages",
+      "evidence": [
+        "http://static1.squarespace.com/static/6321dca9e5859b6c96f72f5a/t/632dac0c91587952962bc978/1663937548150/guy-with-crew.jpg?format=1500w"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Detect website technologies",
+      "status": "pass",
+      "description": "Detects technologies used by the website",
+      "evidence": {
+        "tech": [
+          {
+            "name": "Typekit",
+            "version": null
+          },
+          {
+            "name": "Squarespace",
+            "version": null
+          },
+          {
+            "name": "Squarespace Commerce",
+            "version": null
+          },
+          {
+            "name": "Stimulus",
+            "version": null
+          },
+          {
+            "name": "Adobe Fonts",
+            "version": null
+          },
+          {
+            "name": "YouTube",
+            "version": null
+          },
+          {
+            "name": "HSTS",
+            "version": null
+          }
+        ],
+        "headers": [
+          {
+            "name": "X-Contextid",
+            "value": "Q5AzIZ4q/v9ltiz4s"
+          }
+        ]
+      },
+      "risk": 1
+    },
+    {
+      "name": "Check for server-side software vulnerabilities (CVE)",
+      "status": "pass",
+      "description": "Checks for known CVEs in server software (basic version check)",
+      "evidence": {
+        "Server": "Squarespace",
+        "X-Powered-By": null,
+        "cve_info": "No obvious outdated server software detected."
+      },
+      "risk": 1
+    },
+    {
+      "name": "Client access policies",
+      "status": "pass",
+      "description": "Checks for crossdomain.xml and clientaccesspolicy.xml",
+      "evidence": {
+        "crossdomain.xml": "Missing",
+        "clientaccesspolicy.xml": "Missing"
+      },
+      "risk": 1
+    },
+    {
+      "name": "Check if robots.txt exists",
+      "status": "fail",
+      "description": "Checks for robots.txt file and reports its presence/content",
+      "evidence": "# Squarespace Robots Txt\n\nUser-agent: Amazonbot\nUser-agent: anthropic-ai\nUser-agent: Applebot-Extended\nUser-agent: CCBot\nUser-agent: ChatGPT-User\nUser-agent: Claude-Web\nUser-agent: ClaudeBot\nUser-agent: cohere-ai\nUser-agent: DuckAssistBot\nUser-agent: FacebookBot\nUser-agent: Google-CloudVertexBot\nUser-agent: Google-Extended\nUser-agent: GPTBot\nUser-agent: Meta-ExternalAgent\nUser-agent: meta-externalagent\nUser-agent: PerplexityBot\nUser-agent: Quora-Bot\nUser-agent: AdsBot-Google\nUser-agent: AdsBot-G",
+      "risk": 2
+    },
+    {
+      "name": "Check if .well-known/security.txt exists",
+      "status": "fail",
+      "description": "Checks for .well-known/security.txt file and reports its presence/content",
+      "evidence": "security.txt missing",
+      "risk": 2
+    },
+    {
+      "name": "Check for untrusted SSL certificates",
+      "status": "pass",
+      "description": "Checks for SSL certificate trust issues",
+      "evidence": "SSL certificate is trusted.",
+      "risk": 1
+    },
+    {
+      "name": "Check if HTTP TRACE/DEBUG methods are enabled",
+      "status": "pass",
+      "description": "Checks for TRACE/DEBUG HTTP methods",
+      "evidence": {
+        "TRACE": "HTTP 403",
+        "DEBUG": "HTTP 400"
+      },
+      "risk": 1
+    },
+    {
+      "name": "Check if OPTIONS method is enabled",
+      "status": "pass",
+      "description": "Checks for OPTIONS HTTP method and reports Allow header",
+      "evidence": {
+        "status_code": 404,
+        "allow_header": ""
+      },
+      "risk": 1
+    },
+    {
+      "name": "Enforce HTTPS-only",
+      "status": "pass",
+      "description": "Checks if HTTP redirects to HTTPS",
+      "evidence": {
+        "original_url": "http://www.bigdavesbagels.com/",
+        "final_url": "https://www.bigdavesbagels.com/",
+        "redirect_chain": [
+          "http://www.bigdavesbagels.com/",
+          "https://www.bigdavesbagels.com/"
+        ]
+      },
+      "risk": 1
+    },
+    {
+      "name": "Detect directory listing",
+      "status": "pass",
+      "description": "Detects if directory listing is enabled",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect unencrypted password forms",
+      "status": "pass",
+      "description": "Detects password forms not using HTTPS",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect error messages in responses",
+      "status": "pass",
+      "description": "Detects error messages in HTTP responses",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect debug messages",
+      "status": "pass",
+      "description": "Detects debug messages in HTML/JS",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect HTML code comments",
+      "status": "fail",
+      "description": "Detects HTML comments in page source",
+      "evidence": [
+        " This is Squarespace. ",
+        " finch-plums-5h27 ",
+        " End of Squarespace Headers ",
+        " Background ",
+        " Social ",
+        " Title and nav wrapper ",
+        " Title ",
+        " Nav ",
+        " Actions ",
+        " Burger "
+      ],
+      "risk": 2
+    },
+    {
+      "name": "Missing HTTP header - Strict-Transport-Security",
+      "status": "pass",
+      "description": "Checks for HSTS header",
+      "evidence": "max-age=15552000",
+      "risk": 1
+    },
+    {
+      "name": "Missing HTTP header - X-Content-Type-Options",
+      "status": "pass",
+      "description": "Checks for X-Content-Type-Options header",
+      "evidence": "nosniff",
+      "risk": 1
+    },
+    {
+      "name": "Missing HTTP header - Feature/Permissions-Policy",
+      "status": "fail",
+      "description": "Checks for Permissions-Policy or Feature-Policy header",
+      "evidence": {
+        "Permissions-Policy": null,
+        "Feature-Policy": null
+      },
+      "risk": 2
+    },
+    {
+      "name": "Detect passwords in URL query string",
+      "status": "pass",
+      "description": "Detects password values in URL",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Cookie domain too loosely scoped",
+      "status": "fail",
+      "description": "Checks if cookie domain is too broad (e.g., .example.com)",
+      "evidence": [
+        {
+          "name": "crumb",
+          "domain": "www.bigdavesbagels.com"
+        }
+      ],
+      "risk": 2
+    },
+    {
+      "name": "Detect cross-domain JavaScript inclusions",
+      "status": "fail",
+      "description": "Detects JS loaded from other domains",
+      "evidence": [
+        "https://definitions.sqspcdn.com/website-component-definition/static-assets/website.components.map/791ae1f1-cc50-41bd-8ac3-7778ba6b415f_91/website.components.map.visitor.js",
+        "https://static1.squarespace.com/static/vta/5c5a519771c10ba3470d8101/scripts/site-bundle.4f93eb47340ae93d1e512acae69e981c.js",
+        "https://www.fbgcdn.com/embedder/js/ewm2.js"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Internal error code in response",
+      "status": "pass",
+      "description": "Checks for 5xx error codes",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Missing Secure flag on cookie",
+      "status": "pass",
+      "description": "Checks if cookies have Secure flag",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect login interfaces",
+      "status": "pass",
+      "description": "Detects login forms or endpoints",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Verify secure password submission",
+      "status": "pass",
+      "description": "Checks if password forms submit over HTTPS",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect sensitive data in HTML",
+      "status": "pass",
+      "description": "Detects SSNs, card numbers in HTML",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect unsafe Content-Security-Policy config",
+      "status": "info",
+      "description": "Checks for unsafe CSP settings",
+      "evidence": "No CSP header present",
+      "risk": 1
+    },
+    {
+      "name": "Detect exposed OpenAPI or Swagger files",
+      "status": "pass",
+      "description": "Checks for openapi.json or swagger.json",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect file upload fields",
+      "status": "pass",
+      "description": "Detects file upload forms",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Test for SQLi via parameter injection",
+      "status": "info",
+      "description": "No query parameters to test for SQLi",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect password values in later response",
+      "status": "fail",
+      "description": "Detects password values in HTTP response",
+      "evidence": [
+        "\"true\"",
+        "customerEmail.value,",
+        "document.getElementById('customer-email');"
+      ],
+      "risk": 5
+    },
+    {
+      "name": "Path disclosure in error messages",
+      "status": "fail",
+      "description": "Detects file path disclosure in errors",
+      "evidence": [
+        "tourdates-590f75bc5a23c527-min.en-US.js",
+        "products-collection-item-v2-53fa72e33faa607d-min.en-US.js",
+        "media.html",
+        "calendar-block-renderer-272ab0cfaae7d5cb-min.en-US.js",
+        "search-page-fe97d7d0f242a42b-min.en-US.js",
+        "comments-5a700c8889d8cf5f-min.en-US.js",
+        "popup-overlay-da0f91d885861519-min.en-US.js",
+        "website-overlays-manager-4fb12ce2913c92b0-min.en-US.js",
+        "blog-collection-list-6bc31de7ce2e3134-min.en-US.js",
+        "audio-player-90de07ed6f3133e9-min.en-US.js",
+        "common-vendors-stable-54bab8bb8a15366b-min.en-US.js",
+        "website.components.map.visitor.js",
+        "forms-b529f4a7e7f4e1c0-min.en-US.js",
+        "announcement-bar-94d5b894e01dbb8a-min.en-US.js",
+        "products-collection-list-v2-5934140da2f4f73a-min.en-US.js",
+        "cldr-resource-pack-df5ccf33ff79f35b-min.en-US.js",
+        "chartjs-helpers-32e0acd3e82c5bbc-min.en-US.js",
+        "social-buttons-4168ad41d681f128-min.en-US.js",
+        "common-vendors-6c1ed364611473e8-min.en-US.js",
+        "extract-css-runtime-458ef1998786f25f-min.en-US.js",
+        "performance-a7fb2337f65d8da0-min.en-US.js",
+        "events-collection-b11fabbc10a3ff8d-min.en-US.js",
+        "site-bundle.4f93eb47340ae93d1e512acae69e981c.js",
+        "search-preview-1e27610e3386be2e-min.en-US.js",
+        "product-quick-view-01a659d4b729837e-min.en-US.js",
+        "simple-liking-ce827eee91c8c466-min.en-US.js",
+        "ewm2.js",
+        "extract-css-moment-js-vendor-088ec0120fdbcfed-min.en-US.js",
+        "pinterest-50e584ee06a36bf8-min.en-US.js",
+        "dialog-7ce79d392986418e-min.en-US.js",
+        "gallery-collection-list-f144952f77540588-min.en-US.js",
+        "custom-css-popup-c0aea1b5d10686ae-min.en-US.js",
+        "form-rendering-utils-0f85682abbd969de-min.en-US.js",
+        "commerce-e0830c2cecbce12a-min.en-US.js",
+        "g8d9r3Vhpo0pdMhBpbinrga0DeXKRD170rvxaO8uB6Sfe0j2fFHN4UJLFRbh52jhWDjDwRBqjhIoZQ9tFQ8KFcwoFcjawcjujs7PMkG0jAFu-WsoShFGZAsude80ZkoRdhXCHKoyjamTiY8Djhy8ZYmC-Ao1Oco8if37OcBDOcu8OfG0Zc80jh6lSeUudWwlFA6kFkoDSWmyScmDSeBRZPoRdhXCHKoDSWmyScmDSeBRZWFR-emqiAUTdcS0jhNlOeBRiA8XpWFR-emqiAUTdcS0jhNlOeBRiA8XpWFR-emqiAUTdcS0dcmXOeBDOcu8Oe4TZhsyicmDjcB1ZAUDOcFzdPUc-AoR-fu3dYmlSkXu-2JaO1FUiABkZWF3jAF8OcFzdPUCdhFydeyzSabCSaBujW48SagyjhmDjhy8ZYmC-Ao1OcFzdPUaiaS0jAFu-WsoShFGZAsude80ZkoRdhXCiaiaOcBRiA8XpWFR-emqiAUTdcS0dcmXOYiaikoySkolZPUaiaS0jc81ZeBhZWFKjAi8dYw0jhNlOYiaikoc-AoR-fu3dYmlSkXu-2JaO1FUiABkZWF3jAF8OcFzdPUaiaS0SaBujW48SagyjhmDjhy8ZYmC-Ao1OcFzdPJOScNROAikdas8ShC7f6KW3bJbMg6IJMJ7f6K43bJbMg6YJMHbMiphCTqe.js",
+        "image-zoom-0d33abcf9f75d991-min.en-US.js",
+        "common-b586bc48ae3e381a-min.en-US.js"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Session token in URL",
+      "status": "pass",
+      "description": "Detects session tokens in URL query or fragment",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Discovery of exposed API endpoints",
+      "status": "pass",
+      "description": "Detects exposed API endpoints (e.g., /api, /v1, /graphql)",
+      "evidence": null,
+      "risk": 1
+    }
+  ]
+}

@@ -1,0 +1,402 @@
+{
+  "url": "https://ismaik.rnu.tn/",
+  "results": [
+    {
+      "name": "Start scan",
+      "status": "pass",
+      "description": "Scan started",
+      "evidence": "https://ismaik.rnu.tn/",
+      "risk": 1
+    },
+    {
+      "name": "Missing HTTP header - Referrer-Policy",
+      "status": "fail",
+      "description": "Checks for Referrer-Policy header",
+      "evidence": null,
+      "risk": 2
+    },
+    {
+      "name": "HttpOnly flag of cookie",
+      "status": "fail",
+      "description": "Checks if cookies have HttpOnly flag",
+      "evidence": [
+        "PHPSESSID"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Missing HTTP header - Content-Security-Policy and Security.txt",
+      "status": "fail",
+      "description": "Checks for Content-Security-Policy header and .well-known/security.txt file",
+      "evidence": {
+        "Content-Security-Policy": null,
+        "security.txt_present": false
+      },
+      "risk": 4
+    },
+    {
+      "name": "Detect email addresses on page",
+      "status": "fail",
+      "description": "Detects email addresses in page content, mailto links, and source",
+      "evidence": [
+        "ismai@ismai.rnu.tn"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Detect mixed content (HTTP inside HTTPS)",
+      "status": "fail",
+      "description": "Detects HTTP resources loaded in HTTPS pages",
+      "evidence": [
+        "http://fonts.googleapis.com/css?family=Ubuntu+Condensed",
+        "http://fonts.googleapis.com/css?family=Ubuntu+Condensed"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Detect website technologies",
+      "status": "pass",
+      "description": "Detects technologies used by the website",
+      "evidence": {
+        "tech": [
+          {
+            "name": "Bootstrap",
+            "version": null
+          },
+          {
+            "name": "PHP",
+            "version": null
+          },
+          {
+            "name": "Apache HTTP Server",
+            "version": null
+          },
+          {
+            "name": "ZURB Foundation",
+            "version": null
+          }
+        ],
+        "headers": []
+      },
+      "risk": 1
+    },
+    {
+      "name": "Check for server-side software vulnerabilities (CVE)",
+      "status": "pass",
+      "description": "Checks for known CVEs in server software using the NVD API",
+      "evidence": {
+        "Server": "Apache",
+        "X-Powered-By": null,
+        "cve_info": [
+          "No recognizable server software/version found in headers."
+        ]
+      },
+      "risk": 1
+    },
+    {
+      "name": "Client access policies",
+      "status": "pass",
+      "description": "Checks for crossdomain.xml and clientaccesspolicy.xml",
+      "evidence": {
+        "crossdomain.xml": "Missing",
+        "clientaccesspolicy.xml": "Missing"
+      },
+      "risk": 1
+    },
+    {
+      "name": "Check if robots.txt exists",
+      "status": "fail",
+      "description": "Checks for robots.txt file and reports its presence/content",
+      "evidence": "# www.robotstxt.org/\n# www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449\n\nUser-agent: *",
+      "risk": 2
+    },
+    {
+      "name": "Check if .well-known/security.txt exists",
+      "status": "fail",
+      "description": "Checks for .well-known/security.txt file and reports its presence/content",
+      "evidence": "security.txt missing",
+      "risk": 2
+    },
+    {
+      "name": "Check for untrusted SSL certificates",
+      "status": "pass",
+      "description": "Checks for SSL certificate trust issues",
+      "evidence": "SSL certificate is trusted.",
+      "risk": 1
+    },
+    {
+      "name": "Check if HTTP TRACE/DEBUG methods are enabled",
+      "status": "pass",
+      "description": "Checks for TRACE/DEBUG HTTP methods",
+      "evidence": {
+        "TRACE": "HTTP 500",
+        "DEBUG": "HTTP 500"
+      },
+      "risk": 1
+    },
+    {
+      "name": "Check if OPTIONS method is enabled",
+      "status": "pass",
+      "description": "Checks for OPTIONS HTTP method and reports Allow header",
+      "evidence": {
+        "status_code": 200,
+        "allow_header": ""
+      },
+      "risk": 1
+    },
+    {
+      "name": "Enforce HTTPS-only",
+      "status": "pass",
+      "description": "Checks if HTTP redirects to HTTPS",
+      "evidence": {
+        "original_url": "http://ismaik.rnu.tn/",
+        "final_url": "https://ismaik.rnu.tn:443/",
+        "redirect_chain": [
+          "http://ismaik.rnu.tn/",
+          "https://ismaik.rnu.tn:443/"
+        ]
+      },
+      "risk": 1
+    },
+    {
+      "name": "Detect directory listing",
+      "status": "pass",
+      "description": "Detects if directory listing is enabled",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect unencrypted password forms",
+      "status": "pass",
+      "description": "Detects password forms not using HTTPS",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect error messages in responses",
+      "status": "pass",
+      "description": "Detects error messages in HTTP responses",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect debug messages",
+      "status": "fail",
+      "description": "Detects debug messages in HTML/JS",
+      "evidence": [
+        "console\\.log\\s*\\("
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Detect HTML code comments",
+      "status": "fail",
+      "description": "Detects HTML comments in page source",
+      "evidence": [
+        " Meta ",
+        " fin meta ",
+        " paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ ",
+        "[if lt IE 7]> <html class=\"no-js lt-ie9 lt-ie8 lt-ie7\" lang=\"en\"> <![endif]",
+        "[if IE 7]>    <html class=\"no-js lt-ie9 lt-ie8\" lang=\"en\"> <![endif]",
+        "[if IE 8]>    <html class=\"no-js lt-ie9\" lang=\"en\"> <![endif]",
+        "[if gt IE 8]><!",
+        "<![endif]",
+        " Set the viewport width to device width for mobile ",
+        " Topnav JS & CSS "
+      ],
+      "risk": 2
+    },
+    {
+      "name": "Missing HTTP header - Strict-Transport-Security",
+      "status": "fail",
+      "description": "Checks for HSTS header",
+      "evidence": null,
+      "risk": 3
+    },
+    {
+      "name": "Missing HTTP header - X-Content-Type-Options",
+      "status": "pass",
+      "description": "Checks for X-Content-Type-Options header",
+      "evidence": "nosniff",
+      "risk": 1
+    },
+    {
+      "name": "Missing HTTP header - Feature/Permissions-Policy",
+      "status": "fail",
+      "description": "Checks for Permissions-Policy or Feature-Policy header",
+      "evidence": {
+        "Permissions-Policy": null,
+        "Feature-Policy": null
+      },
+      "risk": 2
+    },
+    {
+      "name": "Detect passwords in URL query string",
+      "status": "pass",
+      "description": "Detects password values in URL",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Cookie domain too loosely scoped",
+      "status": "fail",
+      "description": "Checks if cookie domain is too broad (e.g., .example.com)",
+      "evidence": [
+        {
+          "name": "PHPSESSID",
+          "domain": "ismaik.rnu.tn"
+        },
+        {
+          "name": "cookiesession1",
+          "domain": "ismaik.rnu.tn"
+        }
+      ],
+      "risk": 2
+    },
+    {
+      "name": "Detect cross-domain JavaScript inclusions",
+      "status": "fail",
+      "description": "Detects JS loaded from other domains",
+      "evidence": [
+        "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/fr.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/fr.js"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Internal error code in response",
+      "status": "pass",
+      "description": "Checks for 5xx error codes",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Missing Secure flag on cookie",
+      "status": "fail",
+      "description": "Checks if cookies have Secure flag",
+      "evidence": [
+        {
+          "name": "PHPSESSID",
+          "domain": "ismaik.rnu.tn"
+        },
+        {
+          "name": "cookiesession1",
+          "domain": "ismaik.rnu.tn"
+        }
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Detect login interfaces",
+      "status": "fail",
+      "description": "Detects login forms or endpoints",
+      "evidence": {
+        "forms": [
+          {
+            "action": "https://ismaik.rnu.tn/fra/intranet/check_account",
+            "id": null,
+            "name": null
+          }
+        ],
+        "links": []
+      },
+      "risk": 2
+    },
+    {
+      "name": "Verify secure password submission",
+      "status": "pass",
+      "description": "Checks if password forms submit over HTTPS",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect sensitive data in HTML",
+      "status": "pass",
+      "description": "Detects SSNs, card numbers in HTML",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect unsafe Content-Security-Policy config",
+      "status": "info",
+      "description": "Checks for unsafe CSP settings",
+      "evidence": "No CSP header present",
+      "risk": 1
+    },
+    {
+      "name": "Detect exposed OpenAPI or Swagger files",
+      "status": "pass",
+      "description": "Checks for openapi.json or swagger.json",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect file upload fields",
+      "status": "pass",
+      "description": "Detects file upload forms",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Test for SQLi via parameter injection",
+      "status": "info",
+      "description": "No query parameters to test for SQLi",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Detect password values in later response",
+      "status": "fail",
+      "description": "Detects password values in HTTP response",
+      "evidence": [
+        "ismai"
+      ],
+      "risk": 5
+    },
+    {
+      "name": "Path disclosure in error messages",
+      "status": "fail",
+      "description": "Detects file path disclosure in errors",
+      "evidence": [
+        "liteaccordion.jquery.js",
+        "jquery-ui.multidatespicker.js",
+        "ColVis.min.js",
+        "jquery.easing.1.3.js",
+        "moment.js",
+        "jquery.dataTables.min.js",
+        "html5.js",
+        "bootstrap.min.js",
+        "jquery.dpSocialBar.min.js",
+        "jquery.bxslider.min.js",
+        "ZeroClipboard.js",
+        "jquery-ui-1.9.2.custom.min.js",
+        "TableTools.min.js",
+        "chosen.jquery.min.js",
+        "jquery.lightbox.min.js",
+        "fr.js",
+        "hoverIntent.js",
+        "superfish.js"
+      ],
+      "risk": 3
+    },
+    {
+      "name": "Session token in URL",
+      "status": "pass",
+      "description": "Detects session tokens in URL query or fragment",
+      "evidence": null,
+      "risk": 1
+    },
+    {
+      "name": "Discovery of exposed API endpoints",
+      "status": "fail",
+      "description": "Detects exposed API endpoints (e.g., /api, /v1, /graphql)",
+      "evidence": {
+        "https://ismaik.rnu.tn/api/": "    <!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\"><head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n<base href=\"https://ismaik.rnu.tn/\" />\n<!-- Meta -->\n<title>ISMAI -Institut Sup\u00e9rieur de Math\u00e9matiques Appliqu\u00e9es et d'informatique de Kairouan - Institut Sup\u00e9rieur de Math\u00e9matiques Appliqu\u00e9es et d'informatique de Kairouan</title>\n<meta name=\"description\" content=\"Institut Sup\u00e9rieur de Math\u00e9matiques Appliqu\u00e9es et d\\'informatique de Kairouan\" />  \n<meta name=",
+        "https://ismaik.rnu.tn/rest/": "    <!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\"><head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n<base href=\"https://ismaik.rnu.tn/\" />\n<!-- Meta -->\n<title>ISMAI -Institut Sup\u00e9rieur de Math\u00e9matiques Appliqu\u00e9es et d'informatique de Kairouan - Institut Sup\u00e9rieur de Math\u00e9matiques Appliqu\u00e9es et d'informatique de Kairouan</title>\n<meta name=\"description\" content=\"Institut Sup\u00e9rieur de Math\u00e9matiques Appliqu\u00e9es et d\\'informatique de Kairouan\" />  \n<meta name="
+      },
+      "risk": 3
+    }
+  ]
+}
