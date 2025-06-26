@@ -10,7 +10,8 @@ def run(url, resp=None):
             '--url', url,
             '--no-update',
             '--format', 'json',
-            '--enumerate', 'u'
+            '--enumerate', 'u',
+            '--random-user-agent'
         ]
         result = subprocess.run(docker_cmd, capture_output=True, text=True, timeout=180)
         try:
