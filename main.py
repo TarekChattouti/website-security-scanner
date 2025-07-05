@@ -1,9 +1,15 @@
 from flask import Flask, request, render_template_string
 import json
 from website_scanner.scanner import run_all_checks
+from wordpress.scanner import run_wordpress_checks
+from network_scanner.scanner import run_all_checks as run_network_checks
+from ssl_scanner.scanner import run_all_checks as run_ssl_checks
+from subdomain_finder.scanner import run_all_checks as run_subfinder_checks
 import importlib
 import os
 from urllib.parse import urlparse
+import threading
+import time
 
 app = Flask(__name__)
 
@@ -112,7 +118,75 @@ WORDPRESS_TEMPLATE = '''
 </html>
 '''
 
-def run_wordpress_checks(url):
+SCAN_STATUS = {}
+
+# Helper: background scan runner
+def start_scan(tool, target):
+    scan_id = None
+    result = None
+    if tool == 'website':
+        result = run_all_checks(target)
+        scan_id = os.path.basename(result.get('saved_to', ''))
+    elif tool == 'wordpress':
+        result = run_wordpress_checks(target, save=True)
+        scan_id = result.get('scan_id')
+    elif tool == 'network':
+        result = run_network_checks(target)
+        scan_id = result.get('scan_id')
+    elif tool == 'ssl':
+        result = run_ssl_checks(target)
+        scan_id = result.get('scan_id')
+    elif tool == 'subdomain':
+        result = run_subfinder_checks(target)
+        scan_id = result.get('scan_id')
+    if scan_id:
+        SCAN_STATUS[scan_id] = {'status': 'done', 'result': result}
+    return scan_id
+
+def launch_scan_async(tool, target):
+    scan_id = f"pending_{int(time.time()*1000)}_{tool}"
+    SCAN_STATUS[scan_id] = {'status': 'running', 'result': None}
+    def runner():
+        real_id = start_scan(tool, target)
+        if real_id:
+            SCAN_STATUS[real_id] = SCAN_STATUS.pop(scan_id)
+            SCAN_STATUS[real_id]['status'] = 'done'
+        else:
+            SCAN_STATUS[scan_id]['status'] = 'error'
+    threading.Thread(target=runner, daemon=True).start()
+    return scan_id
+
+from flask import jsonify
+
+@app.route('/api/v1/<tool>/scan', methods=['POST'])
+def api_scan_launch(tool):
+    data = request.get_json(force=True)
+    target = data.get('target')
+    if not target or tool not in ['website', 'wordpress', 'network', 'ssl', 'subdomain']:
+        return jsonify({'error': 'Invalid tool or target'}), 400
+    scan_id = launch_scan_async(tool, target)
+    return jsonify({'scan_id': scan_id, 'status': 'started'})
+
+@app.route('/api/v1/<tool>/scan', methods=['GET'])
+def api_scan_result(tool):
+    scan_id = request.args.get('scan_id')
+    if not scan_id:
+        return jsonify({'error': 'Missing scan_id'}), 400
+    # Try in-memory first
+    if scan_id in SCAN_STATUS:
+        status = SCAN_STATUS[scan_id]['status']
+        result = SCAN_STATUS[scan_id]['result']
+        return jsonify({'status': status, 'result': result})
+    # Try loading from file
+    results_dir = os.path.join(os.path.dirname(__file__), 'results')
+    filepath = os.path.join(results_dir, scan_id)
+    if os.path.exists(filepath):
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return jsonify({'status': 'done', 'result': data})
+    return jsonify({'error': 'Scan ID not found'}), 404
+
+def run_wordpress_checks(url, save=False):
     results = []
     import requests
     import json
@@ -180,16 +254,17 @@ def run_wordpress_checks(url):
         except Exception as e:
             result = {'name': check_file, 'status': 'error', 'description': str(e), 'evidence': None, 'risk': 1}
         results.append(result)
-    # Save results to results folder with date and domain in filename
-    parsed = urlparse(url)
-    domain = parsed.netloc.replace(':', '_')
-    date_str = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename = f"wp_{date_str}_{domain}.json"
-    results_dir = os.path.join(os.path.dirname(__file__), 'results')
-    os.makedirs(results_dir, exist_ok=True)
-    filepath = os.path.join(results_dir, filename)
-    with open(filepath, 'w', encoding='utf-8') as f:
-        json.dump({'url': url, 'results': results}, f, indent=2)
+    if save:
+        # Save results to results folder with date and domain in filename
+        parsed = urlparse(url)
+        domain = parsed.netloc.replace(':', '_')
+        date_str = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"wp_{date_str}_{domain}.json"
+        results_dir = os.path.join(os.path.dirname(__file__), 'results')
+        os.makedirs(results_dir, exist_ok=True)
+        filepath = os.path.join(results_dir, filename)
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump({'url': url, 'results': results}, f, indent=2)
     return results
 
 @app.route('/', methods=['GET', 'POST'])
