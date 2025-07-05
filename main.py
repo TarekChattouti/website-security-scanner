@@ -124,6 +124,7 @@ SCAN_STATUS = {}
 def start_scan(tool, target):
     scan_id = None
     result = None
+    pending_id = threading.current_thread().name if threading.current_thread().name.startswith('pending_') else None
     if tool == 'website':
         result = run_all_checks(target)
         scan_id = os.path.basename(result.get('saved_to', ''))
@@ -141,12 +142,20 @@ def start_scan(tool, target):
         scan_id = result.get('scan_id')
     if scan_id:
         SCAN_STATUS[scan_id] = {'status': 'done', 'result': result}
+        # Save a mapping file from pending_id to scan_id if running in async
+        if pending_id:
+            results_dir = os.path.join(os.path.dirname(__file__), 'results')
+            os.makedirs(results_dir, exist_ok=True)
+            mapping_path = os.path.join(results_dir, f"{pending_id}.map")
+            with open(mapping_path, 'w', encoding='utf-8') as f:
+                f.write(scan_id)
     return scan_id
 
 def launch_scan_async(tool, target):
     scan_id = f"pending_{int(time.time()*1000)}_{tool}"
     SCAN_STATUS[scan_id] = {'status': 'running', 'result': None}
     def runner():
+        threading.current_thread().name = scan_id
         real_id = start_scan(tool, target)
         if real_id:
             SCAN_STATUS[real_id] = SCAN_STATUS.pop(scan_id)
@@ -176,9 +185,7 @@ def api_scan_result(tool):
     if scan_id in SCAN_STATUS:
         status = SCAN_STATUS[scan_id]['status']
         result = SCAN_STATUS[scan_id]['result']
-        # If scan is done and result contains a final scan_id, always return the result for the original scan_id
         if status == 'done' and result and result.get('scan_id'):
-            # Try loading from file for the final scan_id
             final_id = result['scan_id']
             results_dir = os.path.join(os.path.dirname(__file__), 'results')
             filepath = os.path.join(results_dir, final_id)
@@ -196,10 +203,14 @@ def api_scan_result(tool):
         with open(filepath, 'r', encoding='utf-8') as f:
             data = json.load(f)
         return jsonify({'status': 'done', 'result': data, 'scan_id': scan_id})
-    # If not found, try to find a result file for this scan (for pending IDs)
-    for fname in os.listdir(results_dir):
-        if fname.endswith('.json') and scan_id in fname:
-            with open(os.path.join(results_dir, fname), 'r', encoding='utf-8') as f:
+    # If not found, try to find a mapping file for this scan (for pending IDs)
+    mapping_path = os.path.join(results_dir, f"{scan_id}.map")
+    if os.path.exists(mapping_path):
+        with open(mapping_path, 'r', encoding='utf-8') as f:
+            final_id = f.read().strip()
+        final_path = os.path.join(results_dir, final_id)
+        if os.path.exists(final_path):
+            with open(final_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             return jsonify({'status': 'done', 'result': data, 'scan_id': scan_id})
     return jsonify({'error': 'Scan ID not found'}), 404
