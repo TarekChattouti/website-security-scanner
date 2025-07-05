@@ -30,7 +30,7 @@ def wait_for_completion(scan_id, timeout=9000, interval=10):
         response.raise_for_status()
         status = response.json()["data"]["status_name"]
         print(f"Status: {status}")
-        if status == "completed":
+        if status == "finished":
             return True
         time.sleep(interval)
         elapsed += interval
