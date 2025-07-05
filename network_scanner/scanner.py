@@ -15,4 +15,4 @@ def run_all_checks(target):
         except Exception as e:
             results.append({'name': check_file, 'status': 'error', 'description': str(e)})
     return results
-print(run_all_checks("https://movieparadise.org/"))
+print(run_all_checks("movieparadise.org"))
