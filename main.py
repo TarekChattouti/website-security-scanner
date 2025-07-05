@@ -176,8 +176,8 @@ def api_scan_result(tool):
     if scan_id in SCAN_STATUS:
         status = SCAN_STATUS[scan_id]['status']
         result = SCAN_STATUS[scan_id]['result']
-        # If scan is done and result contains a final scan_id, return it
-        if status == 'done' and result and result.get('scan_id') and scan_id != result.get('scan_id'):
+        # If scan is done and result contains a final scan_id, always return the result for the original scan_id
+        if status == 'done' and result and result.get('scan_id'):
             # Try loading from file for the final scan_id
             final_id = result['scan_id']
             results_dir = os.path.join(os.path.dirname(__file__), 'results')
@@ -185,17 +185,23 @@ def api_scan_result(tool):
             if os.path.exists(filepath):
                 with open(filepath, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                return jsonify({'status': 'done', 'result': data, 'final_scan_id': final_id})
+                return jsonify({'status': 'done', 'result': data, 'scan_id': scan_id})
             else:
-                return jsonify({'status': 'done', 'result': result, 'final_scan_id': final_id})
-        return jsonify({'status': status, 'result': result})
-    # Try loading from file
+                return jsonify({'status': 'done', 'result': result, 'scan_id': scan_id})
+        return jsonify({'status': status, 'result': result, 'scan_id': scan_id})
+    # Try loading from file (support both pending and final IDs)
     results_dir = os.path.join(os.path.dirname(__file__), 'results')
     filepath = os.path.join(results_dir, scan_id)
     if os.path.exists(filepath):
         with open(filepath, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        return jsonify({'status': 'done', 'result': data})
+        return jsonify({'status': 'done', 'result': data, 'scan_id': scan_id})
+    # If not found, try to find a result file for this scan (for pending IDs)
+    for fname in os.listdir(results_dir):
+        if fname.endswith('.json') and scan_id in fname:
+            with open(os.path.join(results_dir, fname), 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return jsonify({'status': 'done', 'result': data, 'scan_id': scan_id})
     return jsonify({'error': 'Scan ID not found'}), 404
 
 def run_wordpress_checks(url, save=False):
