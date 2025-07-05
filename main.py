@@ -151,8 +151,22 @@ def start_scan(tool, target):
         else:
             scan_id = result.get('scan_id')
     elif tool == 'ssl':
+        import os  # Ensure os is available in this scope
+        from datetime import datetime
         result = run_ssl_checks(target)
-        scan_id = result.get('scan_id')
+        if isinstance(result, list):
+            date_str = datetime.now().strftime('%Y%m%d_%H%M%S')
+            domain = str(target).replace('https://', '').replace('http://', '').split('/')[0].replace(':', '_')
+            scan_id_val = f"ssl_{date_str}_{domain}.json"
+            results_dir = os.path.join(os.path.dirname(__file__), 'results')
+            os.makedirs(results_dir, exist_ok=True)
+            filepath = os.path.join(results_dir, scan_id_val)
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump({'target': target, 'results': result}, f, indent=2)
+            result = {'target': target, 'results': result, 'scan_id': scan_id_val}
+            scan_id = scan_id_val
+        else:
+            scan_id = result.get('scan_id')
     elif tool == 'subdomain':
         result = run_subfinder_checks(target)
         scan_id = result.get('scan_id')
