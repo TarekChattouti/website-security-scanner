@@ -176,6 +176,18 @@ def api_scan_result(tool):
     if scan_id in SCAN_STATUS:
         status = SCAN_STATUS[scan_id]['status']
         result = SCAN_STATUS[scan_id]['result']
+        # If scan is done and result contains a final scan_id, return it
+        if status == 'done' and result and result.get('scan_id') and scan_id != result.get('scan_id'):
+            # Try loading from file for the final scan_id
+            final_id = result['scan_id']
+            results_dir = os.path.join(os.path.dirname(__file__), 'results')
+            filepath = os.path.join(results_dir, final_id)
+            if os.path.exists(filepath):
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                return jsonify({'status': 'done', 'result': data, 'final_scan_id': final_id})
+            else:
+                return jsonify({'status': 'done', 'result': result, 'final_scan_id': final_id})
         return jsonify({'status': status, 'result': result})
     # Try loading from file
     results_dir = os.path.join(os.path.dirname(__file__), 'results')
