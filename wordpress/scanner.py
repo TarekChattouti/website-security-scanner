@@ -2,12 +2,12 @@ import importlib
 import os
 import json
 from datetime import datetime
+from urllib.parse import urlparse
+import requests
+import subprocess
 
 def run_wordpress_checks(url, save=True, scan_id=None):
     results = []
-    import requests
-    import subprocess
-    from urllib.parse import urlparse
     # Get base response for header checks
     try:
         resp = requests.get(url, timeout=10, verify=False)
@@ -69,12 +69,14 @@ def run_wordpress_checks(url, save=True, scan_id=None):
         except Exception as e:
             result = {'name': check_file, 'status': 'error', 'description': str(e), 'evidence': None, 'risk': 1}
         results.append(result)
-        # --- Progress update ---
+        # --- Progress and partial result update ---
         if scan_id:
             try:
                 from main import SCAN_STATUS
                 if scan_id in SCAN_STATUS:
-                    SCAN_STATUS[scan_id]['progress'] = max(1, min(99, int(((idx+1)/total)*100)))
+                    progress = max(1, min(99, int(((idx+1)/total)*100)))
+                    SCAN_STATUS[scan_id]['progress'] = progress
+                    SCAN_STATUS[scan_id]['result'] = {'url': url, 'results': results[:], 'scan_id': scan_id}
             except Exception:
                 pass
     # Save results to results folder with date and domain in filename
@@ -87,5 +89,5 @@ def run_wordpress_checks(url, save=True, scan_id=None):
         os.makedirs(results_dir, exist_ok=True)
         filepath = os.path.join(results_dir, filename)
         with open(filepath, 'w', encoding='utf-8') as f:
-            json.dump({'url': url, 'results': results}, f, indent=2)
+            json.dump({'url': url, 'results': results, 'scan_id': scan_id}, f, indent=2)
     return {'url': url, 'results': results, 'scan_id': scan_id}
