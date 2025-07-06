@@ -10,6 +10,8 @@ import os
 from urllib.parse import urlparse
 import threading
 import time
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 app = Flask(__name__)
 
@@ -220,19 +222,20 @@ def api_scan_result(tool):
         if status == 'done':
             progress = 100
         elif status == 'running':
-            # Try to estimate progress based on result (if available)
-            progress = 10
+            progress = 1  # Start from 1
             if result:
                 # If result is a dict with 'results' as a list, estimate by number of checks done
                 if isinstance(result, dict) and 'results' in result and isinstance(result['results'], list):
                     total = 30  # Default: website_scanner has ~30 checks, adjust as needed
                     done = len(result['results'])
-                    progress = min(99, int((done / total) * 100))
+                    if total > 0:
+                        progress = max(1, min(99, int((done / total) * 100)))
                 # If result is a list (network/ssl), estimate by length
                 elif isinstance(result, list):
                     total = 10  # Default for network/ssl, adjust as needed
                     done = len(result)
-                    progress = min(99, int((done / total) * 100))
+                    if total > 0:
+                        progress = max(1, min(99, int((done / total) * 100)))
         else:
             progress = 0
         if status == 'done' and result and result.get('scan_id'):
