@@ -8,8 +8,12 @@ import requests
 
 def run_all_checks(url, scan_id=None):
     results = []
+    # Extract domain only (no schema)
+    parsed = urlparse(url)
+    domain = parsed.netloc if parsed.netloc else url
     try:
-        resp = requests.get(url, timeout=10, verify=False)
+        # For network checks, we do not need to request the URL, just use the domain
+        pass
     except Exception as e:
         set_scan_status(scan_id, status='error', progress=0, result={'error': str(e)})
         return {'error': str(e)}
@@ -21,7 +25,7 @@ def run_all_checks(url, scan_id=None):
         mod_name = f"network_scanner.{check_file[:-3]}"
         mod = importlib.import_module(mod_name)
         try:
-            result = mod.run(url, resp)
+            result = mod.run(domain)
         except Exception as e:
             result = {'name': check_file, 'status': 'error', 'description': str(e), 'evidence': None}
         results.append(result)
