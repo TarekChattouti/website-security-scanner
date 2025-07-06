@@ -20,8 +20,8 @@ def run_all_checks(target, scan_id=None):
         if scan_id:
             try:
                 from main import SCAN_STATUS
-                if scan_id in SCAN_STATUS:
-                    SCAN_STATUS[scan_id]['result'] = results
+                if scan_id in SCAN_STATUS and 'result' in SCAN_STATUS[scan_id] and 'results' in SCAN_STATUS[scan_id]['result']:
+                    SCAN_STATUS[scan_id]['result']['results'].append(result)
             except Exception:
                 pass
     domain = target.replace('https://', '').replace('http://', '').split('/')[0].replace(':', '_')

@@ -88,7 +88,7 @@ def start_scan(tool, target):
 
 def launch_scan_async(tool, target):
     scan_id = f"pending_{int(time.time()*1000)}_{tool}"
-    SCAN_STATUS[scan_id] = {'status': 'running', 'result': None}
+    SCAN_STATUS[scan_id] = {'status': 'running', 'result': {'results': []}}
     def runner():
         threading.current_thread().name = scan_id
         real_id = start_scan(tool, target)
