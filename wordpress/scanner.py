@@ -5,6 +5,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 import requests
 import subprocess
+from scan_db import set_scan_status
 
 def run_wordpress_checks(url, save=True, scan_id=None):
     results = []
@@ -71,14 +72,8 @@ def run_wordpress_checks(url, save=True, scan_id=None):
         results.append(result)
         # --- Progress and partial result update ---
         if scan_id:
-            try:
-                from main import SCAN_STATUS
-                if scan_id in SCAN_STATUS:
-                    progress = max(1, min(99, int(((idx+1)/total)*100)))
-                    SCAN_STATUS[scan_id]['progress'] = progress
-                    SCAN_STATUS[scan_id]['result'] = {'url': url, 'results': results[:], 'scan_id': scan_id}
-            except Exception:
-                pass
+            progress = max(1, min(99, int(((idx+1)/total)*100)))
+            set_scan_status(scan_id, progress=progress, result={'url': url, 'results': results[:], 'scan_id': scan_id})
     # Save results to results folder with date and domain in filename
     if save:
         parsed = urlparse(url)
@@ -90,4 +85,5 @@ def run_wordpress_checks(url, save=True, scan_id=None):
         filepath = os.path.join(results_dir, filename)
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump({'url': url, 'results': results, 'scan_id': scan_id}, f, indent=2)
+    set_scan_status(scan_id, progress=100, status='done', result={'url': url, 'results': results, 'scan_id': scan_id})
     return {'url': url, 'results': results, 'scan_id': scan_id}
