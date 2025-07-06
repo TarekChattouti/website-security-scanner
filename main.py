@@ -88,13 +88,14 @@ def start_scan(tool, target):
 
 def launch_scan_async(tool, target):
     scan_id = f"pending_{int(time.time()*1000)}_{tool}"
-    SCAN_STATUS[scan_id] = {'status': 'running', 'result': {'results': []}}
+    SCAN_STATUS[scan_id] = {'status': 'running', 'result': None, 'progress': 1}
     def runner():
         threading.current_thread().name = scan_id
         real_id = start_scan(tool, target)
         if real_id:
             SCAN_STATUS[real_id] = SCAN_STATUS.pop(scan_id)
             SCAN_STATUS[real_id]['status'] = 'done'
+            SCAN_STATUS[real_id]['progress'] = 100
         else:
             SCAN_STATUS[scan_id]['status'] = 'error'
     threading.Thread(target=runner, daemon=True).start()
@@ -120,7 +121,8 @@ def api_scan_result(tool):
     if scan_id in SCAN_STATUS:
         status = SCAN_STATUS[scan_id]['status']
         result = SCAN_STATUS[scan_id]['result']
-        # Estimate progress
+        # Use direct progress if available
+        progress = SCAN_STATUS[scan_id].get('progress', 1)
         if status == 'done':
             progress = 100
         elif status == 'running':
@@ -170,7 +172,7 @@ def api_scan_result(tool):
             return jsonify({'status': 'done', 'result': data, 'scan_id': scan_id, 'progress': 100})
     return jsonify({'error': 'Scan ID not found'}), 404
 
-def run_wordpress_checks(url, save=False):
+def run_wordpress_checks(url, save=False, scan_id=None):
     results = []
     import requests
     import json
@@ -178,6 +180,7 @@ def run_wordpress_checks(url, save=False):
     from urllib.parse import urlparse
     import os
     import subprocess
+    global SCAN_STATUS
     # Get base response for header checks
     try:
         resp = requests.get(url, timeout=10, verify=False)
@@ -226,7 +229,8 @@ def run_wordpress_checks(url, save=False):
     wp_dir = os.path.join(os.path.dirname(__file__), 'wordpress')
     check_files = [f for f in os.listdir(wp_dir) if f.startswith('check_') and f.endswith('.py')]
     check_files.sort()
-    for check_file in check_files:
+    total = len(check_files)
+    for idx, check_file in enumerate(check_files):
         mod_name = f"wordpress.{check_file[:-3]}"
         mod = importlib.import_module(mod_name)
         try:
@@ -238,6 +242,10 @@ def run_wordpress_checks(url, save=False):
         except Exception as e:
             result = {'name': check_file, 'status': 'error', 'description': str(e), 'evidence': None, 'risk': 1}
         results.append(result)
+        # Update progress after each check
+        if scan_id and scan_id in SCAN_STATUS:
+            progress = int(((idx + 1) / total) * 99)  # 1-99, 100 set at end
+            SCAN_STATUS[scan_id]['progress'] = progress
     if save:
         # Save results to results folder with date and domain in filename
         parsed = urlparse(url)
@@ -249,6 +257,9 @@ def run_wordpress_checks(url, save=False):
         filepath = os.path.join(results_dir, filename)
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump({'url': url, 'results': results}, f, indent=2)
+    # Set progress to 100 at the end
+    if scan_id and scan_id in SCAN_STATUS:
+        SCAN_STATUS[scan_id]['progress'] = 100
     return results
 
 if __name__ == '__main__':

@@ -56,7 +56,8 @@ def run_wordpress_checks(url, save=True, scan_id=None):
     wp_dir = os.path.dirname(__file__)
     check_files = [f for f in os.listdir(wp_dir) if f.startswith('check_') and f.endswith('.py')]
     check_files.sort()
-    for check_file in check_files:
+    total = len(check_files)
+    for idx, check_file in enumerate(check_files):
         mod_name = f"wordpress.{check_file[:-3]}"
         mod = importlib.import_module(mod_name)
         try:
@@ -72,8 +73,8 @@ def run_wordpress_checks(url, save=True, scan_id=None):
         if scan_id:
             try:
                 from main import SCAN_STATUS
-                if scan_id in SCAN_STATUS and 'result' in SCAN_STATUS[scan_id] and 'results' in SCAN_STATUS[scan_id]['result']:
-                    SCAN_STATUS[scan_id]['result']['results'].append(result)
+                if scan_id in SCAN_STATUS:
+                    SCAN_STATUS[scan_id]['progress'] = max(1, min(99, int(((idx+1)/total)*100)))
             except Exception:
                 pass
     # Save results to results folder with date and domain in filename
