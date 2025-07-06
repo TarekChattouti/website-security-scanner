@@ -126,6 +126,7 @@ def start_scan(tool, target):
     result = None
     pending_id = threading.current_thread().name if threading.current_thread().name.startswith('pending_') else None
     if tool == 'website':
+        import os  # Ensure os is imported in this scope
         result = run_all_checks(target)
         scan_id = os.path.basename(result.get('saved_to', ''))
     elif tool == 'wordpress':
