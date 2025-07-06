@@ -216,6 +216,25 @@ def api_scan_result(tool):
     if scan_id in SCAN_STATUS:
         status = SCAN_STATUS[scan_id]['status']
         result = SCAN_STATUS[scan_id]['result']
+        # Estimate progress
+        if status == 'done':
+            progress = 100
+        elif status == 'running':
+            # Try to estimate progress based on result (if available)
+            progress = 10
+            if result:
+                # If result is a dict with 'results' as a list, estimate by number of checks done
+                if isinstance(result, dict) and 'results' in result and isinstance(result['results'], list):
+                    total = 30  # Default: website_scanner has ~30 checks, adjust as needed
+                    done = len(result['results'])
+                    progress = min(99, int((done / total) * 100))
+                # If result is a list (network/ssl), estimate by length
+                elif isinstance(result, list):
+                    total = 10  # Default for network/ssl, adjust as needed
+                    done = len(result)
+                    progress = min(99, int((done / total) * 100))
+        else:
+            progress = 0
         if status == 'done' and result and result.get('scan_id'):
             final_id = result['scan_id']
             results_dir = os.path.join(os.path.dirname(__file__), 'results')
@@ -223,17 +242,17 @@ def api_scan_result(tool):
             if os.path.exists(filepath):
                 with open(filepath, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                return jsonify({'status': 'done', 'result': data, 'scan_id': scan_id})
+                return jsonify({'status': 'done', 'result': data, 'scan_id': scan_id, 'progress': 100})
             else:
-                return jsonify({'status': 'done', 'result': result, 'scan_id': scan_id})
-        return jsonify({'status': status, 'result': result, 'scan_id': scan_id})
+                return jsonify({'status': 'done', 'result': result, 'scan_id': scan_id, 'progress': 100})
+        return jsonify({'status': status, 'result': result, 'scan_id': scan_id, 'progress': progress})
     # Try loading from file (support both pending and final IDs)
     results_dir = os.path.join(os.path.dirname(__file__), 'results')
     filepath = os.path.join(results_dir, scan_id)
     if os.path.exists(filepath):
         with open(filepath, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        return jsonify({'status': 'done', 'result': data, 'scan_id': scan_id})
+        return jsonify({'status': 'done', 'result': data, 'scan_id': scan_id, 'progress': 100})
     # If not found, try to find a mapping file for this scan (for pending IDs)
     mapping_path = os.path.join(results_dir, f"{scan_id}.map")
     if os.path.exists(mapping_path):
@@ -243,7 +262,7 @@ def api_scan_result(tool):
         if os.path.exists(final_path):
             with open(final_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            return jsonify({'status': 'done', 'result': data, 'scan_id': scan_id})
+            return jsonify({'status': 'done', 'result': data, 'scan_id': scan_id, 'progress': 100})
     return jsonify({'error': 'Scan ID not found'}), 404
 
 def run_wordpress_checks(url, save=False):
