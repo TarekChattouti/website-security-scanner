@@ -73,6 +73,7 @@ def run_wordpress_checks(url, save=True, scan_id=None):
         # --- Progress and partial result update ---
         if scan_id:
             progress = max(1, min(99, int(((idx+1)/total)*100)))
+            print(f"Progress: {progress}% - {check_file}")
             set_scan_status(scan_id, progress=progress, result={'url': url, 'results': results[:], 'scan_id': scan_id})
     # Save results to results folder with date and domain in filename
     if save:
