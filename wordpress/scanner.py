@@ -26,6 +26,9 @@ def run_wordpress_checks(url, save=True, scan_id=None):
         '--throttle', '1',
         '--api-token', 'yuaBGak9WXHx6UPa6svSifZLFBEohwgEXYsl3dxdb3M'
     ]
+    # Set progress to 5% before running WPScan
+    if scan_id:
+        set_scan_status(scan_id, progress=5, result={'url': url, 'results': results[:], 'scan_id': scan_id})
     try:
         wpscan_result = subprocess.run(docker_cmd, capture_output=True, text=True, timeout=600)
         try:
@@ -52,6 +55,9 @@ def run_wordpress_checks(url, save=True, scan_id=None):
                 wpscan_output = wpscan_result.stdout
         except Exception as e2:
             wpscan_output = str(e2)
+    # Set progress to 10% after WPScan completes
+    if scan_id:
+        set_scan_status(scan_id, progress=10, result={'url': url, 'results': results[:], 'scan_id': scan_id})
     # Prepare resp dict for passing WPScan output
     resp_dict = {'headers': resp.headers if resp else {}, 'text': resp.text if resp else '', 'wpscan_output': wpscan_output}
     wp_dir = os.path.dirname(__file__)
@@ -72,8 +78,8 @@ def run_wordpress_checks(url, save=True, scan_id=None):
         results.append(result)
         # --- Progress and partial result update ---
         if scan_id:
-            progress = max(1, min(99, int(((idx+1)/total)*100)))
-            print(f"Progress: {progress}% - {check_file}")
+            # Progress starts at 10% after WPScan, then increments through checks
+            progress = 10 + int(((idx+1)/total)*89)  # 10-99%
             set_scan_status(scan_id, progress=progress, result={'url': url, 'results': results[:], 'scan_id': scan_id})
     # Save results to results folder with date and domain in filename
     if save:
