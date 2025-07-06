@@ -3,7 +3,7 @@ import os
 import json
 from datetime import datetime
 
-def run_wordpress_checks(url, save=True):
+def run_wordpress_checks(url, save=True, scan_id=None):
     results = []
     import requests
     import subprocess
@@ -68,8 +68,15 @@ def run_wordpress_checks(url, save=True):
         except Exception as e:
             result = {'name': check_file, 'status': 'error', 'description': str(e), 'evidence': None, 'risk': 1}
         results.append(result)
+        # --- Progress update ---
+        if scan_id:
+            try:
+                from main import SCAN_STATUS
+                if scan_id in SCAN_STATUS:
+                    SCAN_STATUS[scan_id]['result'] = {'results': results}
+            except Exception:
+                pass
     # Save results to results folder with date and domain in filename
-    scan_id = None
     if save:
         parsed = urlparse(url)
         domain = parsed.netloc.replace(':', '_')
@@ -80,5 +87,4 @@ def run_wordpress_checks(url, save=True):
         filepath = os.path.join(results_dir, filename)
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump({'url': url, 'results': results}, f, indent=2)
-        scan_id = filename
     return {'url': url, 'results': results, 'scan_id': scan_id}

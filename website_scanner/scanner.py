@@ -7,7 +7,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 from .utils import safe_request
 
-def run_all_checks(url):
+def run_all_checks(url, scan_id=None):
     results = []
     try:
         resp = safe_request(url)
@@ -25,6 +25,14 @@ def run_all_checks(url):
         except Exception as e:
             result = {'name': check_file, 'status': 'error', 'description': str(e), 'evidence': None}
         results.append(result)
+        # --- Progress update ---
+        if scan_id:
+            try:
+                from main import SCAN_STATUS
+                if scan_id in SCAN_STATUS:
+                    SCAN_STATUS[scan_id]['result'] = {'results': results}
+            except Exception:
+                pass
     # Save results to results folder with date and domain in filename
     parsed = urlparse(url)
     domain = parsed.netloc.replace(':', '_')
