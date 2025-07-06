@@ -128,22 +128,23 @@ def start_scan(tool, target):
     result = None
     pending_id = threading.current_thread().name if threading.current_thread().name.startswith('pending_') else None
     if tool == 'website':
-        import os  # Ensure os is imported in this scope
-        result = run_all_checks(target)
-        scan_id = os.path.basename(result.get('saved_to', ''))
+        import os
+        scan_id = pending_id if pending_id else f"website_{int(time.time()*1000)}"
+        result = run_all_checks(target, scan_id=scan_id)
+        scan_id = os.path.basename(result.get('saved_to', scan_id))
     elif tool == 'wordpress':
-        result = run_wordpress_checks(target, save=True)
-        scan_id = result.get('scan_id')
+        scan_id = pending_id if pending_id else f"wordpress_{int(time.time()*1000)}"
+        result = run_wordpress_checks(target, save=True, scan_id=scan_id)
+        # scan_id is not a file, just keep as is
     elif tool == 'network':
-        result = run_network_checks(target)
-        # If result is a list, wrap in dict and add scan_id
+        scan_id = pending_id if pending_id else f"network_{int(time.time()*1000)}"
+        result = run_network_checks(target, scan_id=scan_id)
         if isinstance(result, list):
             from datetime import datetime
             import os
             date_str = datetime.now().strftime('%Y%m%d_%H%M%S')
             domain = str(target).replace('https://', '').replace('http://', '').split('/')[0].replace(':', '_')
             scan_id_val = f"network_{date_str}_{domain}.json"
-            # Save to results folder
             results_dir = os.path.join(os.path.dirname(__file__), 'results')
             os.makedirs(results_dir, exist_ok=True)
             filepath = os.path.join(results_dir, scan_id_val)
@@ -152,11 +153,12 @@ def start_scan(tool, target):
             result = {'target': target, 'results': result, 'scan_id': scan_id_val}
             scan_id = scan_id_val
         else:
-            scan_id = result.get('scan_id')
+            scan_id = result.get('scan_id', scan_id)
     elif tool == 'ssl':
-        import os  # Ensure os is available in this scope
+        import os
         from datetime import datetime
-        result = run_ssl_checks(target)
+        scan_id = pending_id if pending_id else f"ssl_{int(time.time()*1000)}"
+        result = run_ssl_checks(target, scan_id=scan_id)
         if isinstance(result, list):
             date_str = datetime.now().strftime('%Y%m%d_%H%M%S')
             domain = str(target).replace('https://', '').replace('http://', '').split('/')[0].replace(':', '_')
@@ -169,13 +171,13 @@ def start_scan(tool, target):
             result = {'target': target, 'results': result, 'scan_id': scan_id_val}
             scan_id = scan_id_val
         else:
-            scan_id = result.get('scan_id')
+            scan_id = result.get('scan_id', scan_id)
     elif tool == 'subdomain':
-        result = run_subfinder_checks(target)
-        scan_id = result.get('scan_id')
+        scan_id = pending_id if pending_id else f"subdomain_{int(time.time()*1000)}"
+        result = run_subfinder_checks(target, scan_id=scan_id)
+        scan_id = result.get('scan_id', scan_id)
     if scan_id:
         SCAN_STATUS[scan_id] = {'status': 'done', 'result': result}
-        # Save a mapping file from pending_id to scan_id if running in async
         if pending_id:
             results_dir = os.path.join(os.path.dirname(__file__), 'results')
             os.makedirs(results_dir, exist_ok=True)
