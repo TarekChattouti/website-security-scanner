@@ -2,14 +2,14 @@ import subprocess
 import json
 
 def run(target):
-    '''Subdomain enumeration using subfinder'''
+    '''Subdomain enumeration using subfinder (active only)'''
     try:
-        # Run subfinder with JSON output
         output = subprocess.run([
             'subfinder',
             '-d', target,
             '-silent',
-            '-oJ'
+            '-oJ',
+            '-active'  # Only include live subdomains
         ], capture_output=True, text=True, timeout=120)
         subdomains = []
         for line in output.stdout.splitlines():
@@ -22,7 +22,7 @@ def run(target):
         return {
             'name': 'Subdomain Enumeration (subfinder)',
             'status': 'pass' if subdomains else 'fail',
-            'description': 'Enumerates subdomains using subfinder',
+            'description': 'Enumerates live subdomains using subfinder -active',
             'evidence': subdomains,
             'risk': 2 if subdomains else 1
         }
