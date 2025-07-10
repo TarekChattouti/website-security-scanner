@@ -28,5 +28,13 @@ def run_all_checks(url, scan_id=None):
         if scan_id:
             progress = max(1, min(99, int(((idx+1)/total)*100)))
             set_scan_status(scan_id, progress=progress, result={'url': url, 'results': results[:], 'scan_id': scan_id})
-    set_scan_status(scan_id, progress=100, status='done', result={'url': url, 'results': results, 'scan_id': scan_id})
-    return {'url': url, 'results': results, 'scan_id': scan_id}
+    set_scan_status(scan_id, progress=100, status='done', result={'url': url, 'results': results, 'scan_id': scan_id, 'severity': calculate_average_risk(results)})
+    return {'url': url, 'results': results, 'scan_id': scan_id, 'severity': calculate_average_risk(results)}
+
+def calculate_average_risk(results):
+    risk_levels = [result.get('risk', 0) for result in results if 'risk' in result]
+    if risk_levels:
+        return sum(risk_levels) / len(risk_levels)
+    return 0
+
+

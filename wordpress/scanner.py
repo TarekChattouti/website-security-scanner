@@ -92,5 +92,11 @@ def run_wordpress_checks(url, save=True, scan_id=None):
         filepath = os.path.join(results_dir, filename)
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump({'url': url, 'results': results, 'scan_id': scan_id}, f, indent=2)
-    set_scan_status(scan_id, progress=100, status='done', result={'url': url, 'results': results, 'scan_id': scan_id})
-    return {'url': url, 'results': results, 'scan_id': scan_id}
+    set_scan_status(scan_id, progress=100, status='done', result={'url': url, 'results': results, 'scan_id': scan_id, 'severity': calculate_average_risk(results)})
+    return {'url': url, 'results': results, 'scan_id': scan_id, 'severity': calculate_average_risk(results)}
+
+def calculate_average_risk(results):
+    risk_levels = [result.get('risk', 0) for result in results if 'risk' in result]
+    if risk_levels:
+        return sum(risk_levels) / len(risk_levels)
+    return 0
