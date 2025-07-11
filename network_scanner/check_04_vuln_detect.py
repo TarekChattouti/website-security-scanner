@@ -24,7 +24,7 @@ def run(target):
             'status': 'pass',
             'description': 'nmap vulners script output',
             'evidence': vulns,
-            'risk': 4
+            'risk': 4 if vulns else 1
         }
     except Exception as e:
         return {
@@ -32,5 +32,5 @@ def run(target):
             'status': 'error',
             'description': str(e),
             'evidence': None,
-            'risk': 4
+            'risk': 1
         }
