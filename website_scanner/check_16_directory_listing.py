@@ -1,4 +1,6 @@
 import requests
+import json
+import os
 from bs4 import BeautifulSoup
 
 def run(url, resp=None):
@@ -33,10 +35,22 @@ def run(url, resp=None):
                 evidence.append(indicator)
     status = 'fail' if found else 'pass'
     risk = 3 if found else 1
+    
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_16_directory_listing', '')
+    except:
+        pass
+        
     return {
         'name': 'Detect directory listing',
         'status': status,
         'description': 'Detects if directory listing is enabled',
         'evidence': evidence if found else None,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

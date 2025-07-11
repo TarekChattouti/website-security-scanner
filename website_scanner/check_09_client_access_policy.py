@@ -1,4 +1,6 @@
 import requests
+import json
+import os
 
 
 def run(url, resp=None):
@@ -21,10 +23,22 @@ def run(url, resp=None):
     status = 'fail' if any(v == 'Present' for v in results.values()) else 'pass'
     # Risk: 3 (Medium) if present, 1 (Info) if not
     risk = 3 if status == 'fail' else 1
+    
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_09_client_access_policy', '')
+    except:
+        pass
+        
     return {
         'name': 'Client access policies',
         'status': status,
         'description': 'Checks for crossdomain.xml and clientaccesspolicy.xml',
         'evidence': results,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

@@ -1,4 +1,6 @@
 import re
+import json
+import os
 from bs4 import BeautifulSoup
 
 def run(url, resp=None):
@@ -27,10 +29,22 @@ def run(url, resp=None):
             risk = max(risk, 3)
     if not emails:
         risk = 1
+        
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_05_detect_emails', '')
+    except:
+        pass
+        
     return {
         'name': 'Detect email addresses on page',
         'status': status,
         'description': 'Detects email addresses in page content, mailto links, and source',
         'evidence': emails,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

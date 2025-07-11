@@ -1,4 +1,6 @@
 import requests
+import json
+import os
 from requests.exceptions import SSLError
 
 def run(url, resp=None):
@@ -16,10 +18,22 @@ def run(url, resp=None):
         status = 'error'
         evidence = str(e)
         risk = 1
+        
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_12_ssl_cert', '')
+    except:
+        pass
+        
     return {
         'name': 'Check for untrusted SSL certificates',
         'status': status,
         'description': 'Checks for SSL certificate trust issues',
         'evidence': evidence,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

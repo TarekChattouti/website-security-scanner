@@ -1,4 +1,6 @@
 import requests
+import json
+import os
 import re
 from urllib.parse import quote
 from .utils import safe_request
@@ -86,10 +88,22 @@ def run(url, resp=None):
     evidence['cve_info'] = cve_info
     if nvd_cves:
         evidence['nvd_cves'] = nvd_cves
+        
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_08_cve_server_software', '')
+    except:
+        pass
+        
     return {
         'name': 'Check for server-side software vulnerabilities (CVE)',
         'status': status,
         'description': 'Checks for known CVEs in server software using the NVD API',
         'evidence': evidence,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

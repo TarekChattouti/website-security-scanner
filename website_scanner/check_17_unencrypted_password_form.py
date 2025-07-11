@@ -1,4 +1,6 @@
 import requests
+import json
+import os
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
@@ -34,10 +36,22 @@ def run(url, resp=None):
     status = 'fail' if unencrypted_forms else 'pass'
     # Risk: 4 (High) if any unencrypted password forms, 1 (Info) if not
     risk = 4 if unencrypted_forms else 1
+    
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_17_unencrypted_password_form', '')
+    except:
+        pass
+        
     return {
         'name': 'Detect unencrypted password forms',
         'status': status,
         'description': 'Detects password forms not using HTTPS',
         'evidence': unencrypted_forms if unencrypted_forms else None,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

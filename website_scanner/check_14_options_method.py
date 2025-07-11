@@ -1,4 +1,6 @@
 import requests
+import json
+import os
 
 def run(url, resp=None):
     '''Check if OPTIONS method is enabled'''
@@ -12,10 +14,22 @@ def run(url, resp=None):
         status = 'error'
         evidence = str(e)
         risk = 1
+        
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_14_options_method', '')
+    except:
+        pass
+        
     return {
         'name': 'Check if OPTIONS method is enabled',
         'status': status,
         'description': 'Checks for OPTIONS HTTP method and reports Allow header',
         'evidence': evidence,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

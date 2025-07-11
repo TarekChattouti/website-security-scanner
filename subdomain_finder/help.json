@@ -1,0 +1,3 @@
+{
+    "check_01_subfinder": "Audit discovered subdomains for security risks: remove or secure unused subdomains, implement proper access controls on active subdomains, ensure all subdomains use HTTPS and current SSL certificates, apply security headers consistently across all subdomains. Monitor for unauthorized subdomain creation using DNS monitoring tools, implement subdomain takeover protection, and maintain an inventory of all legitimate subdomains. Consider using wildcard certificates or certificate automation for subdomain SSL management."
+}

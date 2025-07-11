@@ -1,3 +1,5 @@
+import json
+import os
 from Wappalyzer import Wappalyzer, WebPage
 from requests_html import HTMLSession
 
@@ -15,10 +17,22 @@ def run(url, resp=None):
         status = 'fail'
         evidence = str(e)
     risk = 1  # Info only
+    
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_07_tech_detect', '')
+    except:
+        pass
+        
     return {
         'name': 'Detect website technologies',
         'status': status,
         'description': 'Detects technologies used by the website (Wappalyzer)',
         'evidence': evidence,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

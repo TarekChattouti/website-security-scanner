@@ -1,4 +1,6 @@
 import requests
+import json
+import os
 
 
 def run(url, resp=None):
@@ -18,6 +20,17 @@ def run(url, resp=None):
         risk = 2
     else:
         risk = 1
+        
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_04_missing_csp', '')
+    except:
+        pass
+        
     return {
         'name': 'Missing HTTP header - Content-Security-Policy and Security.txt',
         'status': status,
@@ -26,5 +39,6 @@ def run(url, resp=None):
             'Content-Security-Policy': val,
             'security.txt_present': sec_present
         },
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

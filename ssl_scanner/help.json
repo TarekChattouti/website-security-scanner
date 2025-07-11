@@ -1,0 +1,3 @@
+{
+    "check_01_ssl_tls_scan": "Implement strong SSL/TLS configurations: use TLS 1.2 or higher, disable weak ciphers and protocols (SSL 2.0/3.0, TLS 1.0/1.1), implement perfect forward secrecy (PFS), use strong cipher suites, enable HSTS headers, implement certificate pinning where appropriate. Configure OCSP stapling for better performance and security. Regularly test SSL configuration with tools like SSL Labs. Keep certificates updated and implement automated renewal. Use cipher suite ordering to prefer stronger algorithms."
+}

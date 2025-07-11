@@ -1,4 +1,6 @@
 import requests
+import json
+import os
 from urllib.parse import urlparse, urlunparse
 from .utils import safe_request
 
@@ -24,10 +26,22 @@ def run(url, resp=None):
         status = 'error'
         evidence = str(e)
         risk = 1
+        
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_15_https_redirect', '')
+    except:
+        pass
+        
     return {
         'name': 'Enforce HTTPS-only',
         'status': status,
         'description': 'Checks if HTTP redirects to HTTPS',
         'evidence': evidence,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

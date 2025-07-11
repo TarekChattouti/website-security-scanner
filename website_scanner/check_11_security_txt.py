@@ -1,4 +1,6 @@
 import requests
+import json
+import os
 from .utils import safe_request
 
 
@@ -23,10 +25,22 @@ def run(url, resp=None):
         status = 'error'
         evidence = str(e)
         risk = 1
+        
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_11_security_txt', '')
+    except:
+        pass
+        
     return {
         'name': 'Check if .well-known/security.txt exists',
         'status': status,
         'description': 'Checks for .well-known/security.txt file and reports its presence/content',
         'evidence': evidence,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }
