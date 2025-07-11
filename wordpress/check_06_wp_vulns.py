@@ -1,4 +1,5 @@
 import json
+import os
 
 def run(url, resp=None):
     '''Parse WPScan output for WordPress core vulnerabilities'''
@@ -10,12 +11,23 @@ def run(url, resp=None):
         wpscan_data = resp['wpscan_output']
     # Optionally, you could load from a file if you save the main scan output
     if not wpscan_data:
+        # Load guide from help.json
+        help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+        guide = ""
+        try:
+            with open(help_file, 'r') as f:
+                help_data = json.load(f)
+                guide = help_data.get('check_06_wp_vulns', '')
+        except:
+            pass
+            
         return {
             'name': 'Search for WordPress vulnerabilities',
             'status': 'error',
             'description': 'No WPScan output available to parse.',
             'evidence': None,
-            'risk': 2
+            'risk': 2,
+            'guide': guide
         }
     try:
         data = wpscan_data if isinstance(wpscan_data, dict) else json.loads(wpscan_data)
@@ -30,10 +42,22 @@ def run(url, resp=None):
         description = f'Could not parse WPScan output as JSON: {str(e)}'
         evidence = str(wpscan_data)[:1000]
         risk = 2
+        
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_06_wp_vulns', '')
+    except:
+        pass
+        
     return {
         'name': 'Search for WordPress vulnerabilities',
         'status': status,
         'description': description,
         'evidence': evidence,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

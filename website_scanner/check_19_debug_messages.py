@@ -1,4 +1,7 @@
+
 import re
+import os
+import json
 from bs4 import BeautifulSoup
 
 def run(url, resp=None):
@@ -8,11 +11,20 @@ def run(url, resp=None):
             import requests
             resp = requests.get(url, timeout=7, verify=False)
         except Exception as e:
+            # Load guide from help.json
+            help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+            try:
+                with open(help_path, 'r', encoding='utf-8') as f:
+                    help_data = json.load(f)
+                guide = help_data.get('check_19_debug_messages', '')
+            except Exception:
+                guide = ''
             return {
                 'name': 'Detect debug messages',
                 'status': 'error',
                 'description': 'Error fetching URL',
-                'evidence': str(e)
+                'evidence': str(e),
+                'guide': guide
             }
     soup = BeautifulSoup(resp.text, 'html.parser')
     scripts = soup.find_all('script')
@@ -44,10 +56,19 @@ def run(url, resp=None):
     status = 'fail' if found else 'pass'
     # Risk: 3 (Medium) if debug messages found, 1 (Info) if not
     risk = 3 if found else 1
+    # Load guide from help.json
+    help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+    try:
+        with open(help_path, 'r', encoding='utf-8') as f:
+            help_data = json.load(f)
+        guide = help_data.get('check_19_debug_messages', '')
+    except Exception:
+        guide = ''
     return {
         'name': 'Detect debug messages',
         'status': status,
         'description': 'Detects debug messages in HTML/JS',
         'evidence': found if found else None,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

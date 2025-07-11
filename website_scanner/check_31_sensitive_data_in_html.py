@@ -1,6 +1,9 @@
+
 import re
 from bs4 import BeautifulSoup
 import requests
+import os
+import json
 
 def run(url, resp=None):
     '''Detect sensitive data (SSNs, card numbers) in HTML'''
@@ -8,12 +11,21 @@ def run(url, resp=None):
         try:
             resp = requests.get(url, timeout=7, verify=False)
         except Exception as e:
+            # Load guide from help.json
+            help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+            try:
+                with open(help_path, 'r', encoding='utf-8') as f:
+                    help_data = json.load(f)
+                guide = help_data.get('check_31_sensitive_data_in_html', '')
+            except Exception:
+                guide = ''
             return {
                 'name': 'Detect sensitive data in HTML',
                 'status': 'error',
                 'description': 'Error fetching URL',
                 'evidence': str(e),
-                'risk': 1
+                'risk': 1,
+                'guide': guide
             }
     soup = BeautifulSoup(resp.text, 'html.parser')
     text = soup.get_text()
@@ -27,10 +39,19 @@ def run(url, resp=None):
     status = 'fail' if found['ssns'] or found['credit_cards'] else 'pass'
     # Risk: 5 (Critical) if any SSNs or card numbers found, 1 (Info) if not
     risk = 5 if found['ssns'] or found['credit_cards'] else 1
+    # Load guide from help.json
+    help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+    try:
+        with open(help_path, 'r', encoding='utf-8') as f:
+            help_data = json.load(f)
+        guide = help_data.get('check_31_sensitive_data_in_html', '')
+    except Exception:
+        guide = ''
     return {
         'name': 'Detect sensitive data in HTML',
         'status': status,
         'description': 'Detects SSNs, card numbers in HTML',
         'evidence': found if status == 'fail' else None,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

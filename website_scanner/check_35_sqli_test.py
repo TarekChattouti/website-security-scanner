@@ -1,6 +1,9 @@
+
 import requests
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 import re
+import os
+import json
 
 def run(url, resp=None):
     '''Test for SQLi via parameter injection (basic, safe)'''
@@ -8,12 +11,21 @@ def run(url, resp=None):
     parsed = urlparse(url)
     query = parse_qs(parsed.query)
     if not query:
+        # Load guide from help.json
+        help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+        try:
+            with open(help_path, 'r', encoding='utf-8') as f:
+                help_data = json.load(f)
+            guide = help_data.get('check_35_sqli_test', '')
+        except Exception:
+            guide = ''
         return {
             'name': 'Test for SQLi via parameter injection',
             'status': 'info',
             'description': 'No query parameters to test for SQLi',
             'evidence': None,
-            'risk': 1
+            'risk': 1,
+            'guide': guide
         }
     sqli_payload = "' OR '1'='1"
     sqli_results = {}
@@ -46,10 +58,19 @@ def run(url, resp=None):
     status = 'fail' if sqli_results else 'pass'
     # Risk: 5 (Critical) if SQLi found, 1 (Info) if not
     risk = 5 if sqli_results else 1
+    # Load guide from help.json
+    help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+    try:
+        with open(help_path, 'r', encoding='utf-8') as f:
+            help_data = json.load(f)
+        guide = help_data.get('check_35_sqli_test', '')
+    except Exception:
+        guide = ''
     return {
         'name': 'Test for SQLi via parameter injection',
         'status': status,
         'description': 'Performs basic SQL injection test on GET parameters',
         'evidence': sqli_results if sqli_results else None,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

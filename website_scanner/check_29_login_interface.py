@@ -1,5 +1,8 @@
+
 from bs4 import BeautifulSoup
 import requests
+import os
+import json
 
 def run(url, resp=None):
     '''Detect login interfaces'''
@@ -7,12 +10,21 @@ def run(url, resp=None):
         try:
             resp = requests.get(url, timeout=7, verify=False)
         except Exception as e:
+            # Load guide from help.json
+            help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+            try:
+                with open(help_path, 'r', encoding='utf-8') as f:
+                    help_data = json.load(f)
+                guide = help_data.get('check_29_login_interface', '')
+            except Exception:
+                guide = ''
             return {
                 'name': 'Detect login interfaces',
                 'status': 'error',
                 'description': 'Error fetching URL',
                 'evidence': str(e),
-                'risk': 1
+                'risk': 1,
+                'guide': guide
             }
     soup = BeautifulSoup(resp.text, 'html.parser')
     login_forms = []
@@ -35,10 +47,19 @@ def run(url, resp=None):
     evidence = {'forms': login_forms, 'links': login_links} if found else None
     # Risk: 2 (Low) if login interface found, 1 (Info) if not
     risk = 2 if found else 1
+    # Load guide from help.json
+    help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+    try:
+        with open(help_path, 'r', encoding='utf-8') as f:
+            help_data = json.load(f)
+        guide = help_data.get('check_29_login_interface', '')
+    except Exception:
+        guide = ''
     return {
         'name': 'Detect login interfaces',
         'status': status,
         'description': 'Detects login forms or endpoints',
         'evidence': evidence,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

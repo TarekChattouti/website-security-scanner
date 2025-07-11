@@ -1,6 +1,9 @@
+
 import re
 from bs4 import BeautifulSoup
 import requests
+import os
+import json
 
 def run(url, resp=None):
     '''Path disclosure in error messages'''
@@ -8,12 +11,21 @@ def run(url, resp=None):
         try:
             resp = requests.get(url, timeout=7, verify=False)
         except Exception as e:
+            # Load guide from help.json
+            help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+            try:
+                with open(help_path, 'r', encoding='utf-8') as f:
+                    help_data = json.load(f)
+                guide = help_data.get('check_37_path_disclosure', '')
+            except Exception:
+                guide = ''
             return {
                 'name': 'Path disclosure in error messages',
                 'status': 'error',
                 'description': 'Error fetching URL',
                 'evidence': str(e),
-                'risk': 1
+                'risk': 1,
+                'guide': guide
             }
     soup = BeautifulSoup(resp.text, 'html.parser')
     text = soup.get_text() + resp.text
@@ -38,10 +50,19 @@ def run(url, resp=None):
     status = 'fail' if flat else 'pass'
     # Risk: 3 (Medium) if path disclosure found, 1 (Info) if not
     risk = 3 if flat else 1
+    # Load guide from help.json
+    help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+    try:
+        with open(help_path, 'r', encoding='utf-8') as f:
+            help_data = json.load(f)
+        guide = help_data.get('check_37_path_disclosure', '')
+    except Exception:
+        guide = ''
     return {
         'name': 'Path disclosure in error messages',
         'status': status,
         'description': 'Detects file path disclosure in errors',
         'evidence': list(flat) if flat else None,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

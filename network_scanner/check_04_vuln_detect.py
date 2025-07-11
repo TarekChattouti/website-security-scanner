@@ -1,5 +1,8 @@
+
 import subprocess
 import re
+import os
+import json
 
 def run(target):
     '''Run nmap vulners script for vulnerability detection and return structured evidence'''
@@ -19,18 +22,36 @@ def run(target):
                     "cve": cve_match.group(1),
                     "line": line.strip()
                 })
+        # Load guide from help.json
+        help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+        try:
+            with open(help_path, 'r', encoding='utf-8') as f:
+                help_data = json.load(f)
+            guide = help_data.get('check_04_vuln_detect', '')
+        except Exception:
+            guide = ''
         return {
             'name': 'Vulnerability Detection',
             'status': 'pass',
             'description': 'nmap vulners script output',
             'evidence': vulns,
-            'risk': 4 if vulns else 1
+            'risk': 4 if vulns else 1,
+            'guide': guide
         }
     except Exception as e:
+        # Load guide from help.json
+        help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+        try:
+            with open(help_path, 'r', encoding='utf-8') as f:
+                help_data = json.load(f)
+            guide = help_data.get('check_04_vuln_detect', '')
+        except Exception:
+            guide = ''
         return {
             'name': 'Vulnerability Detection',
             'status': 'error',
             'description': str(e),
             'evidence': None,
-            'risk': 1
+            'risk': 1,
+            'guide': guide
         }

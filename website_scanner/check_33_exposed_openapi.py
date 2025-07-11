@@ -1,5 +1,8 @@
+
 import requests
 from urllib.parse import urljoin
+import os
+import json
 
 def run(url, resp=None):
     '''Detect exposed OpenAPI or Swagger files'''
@@ -27,10 +30,19 @@ def run(url, resp=None):
     status = 'fail' if found else 'pass'
     # Risk: 4 (High) if exposed OpenAPI/Swagger, 1 (Info) if not
     risk = 4 if found else 1
+    # Load guide from help.json
+    help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+    try:
+        with open(help_path, 'r', encoding='utf-8') as f:
+            help_data = json.load(f)
+        guide = help_data.get('check_33_exposed_openapi', '')
+    except Exception:
+        guide = ''
     return {
         'name': 'Detect exposed OpenAPI or Swagger files',
         'status': status,
         'description': 'Checks for openapi.json or swagger.json',
         'evidence': found if found else None,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

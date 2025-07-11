@@ -1,3 +1,6 @@
+import json
+import os
+
 def run(url, resp=None):
     csp = resp.headers.get('Content-Security-Policy') if resp else None
     unsafe = []
@@ -17,10 +20,22 @@ def run(url, resp=None):
             unsafe.append('object-src not set to none')
     status = 'fail' if unsafe else ('pass' if csp else 'info')
     risk = 4 if unsafe else 1  # Risk: 4 if unsafe CSP config, 1 if safe or missing
+    
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_32_unsafe_csp', '')
+    except:
+        pass
+        
     return {
         'name': 'Detect unsafe Content-Security-Policy config',
         'status': status,
         'description': 'Checks for unsafe CSP settings',
         'evidence': {'csp': csp, 'unsafe': unsafe} if csp else 'No CSP header present',
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

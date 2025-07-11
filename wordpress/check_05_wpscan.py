@@ -1,4 +1,5 @@
 import json
+import os
 
 def run(url, resp=None):
     '''Return parsed WPScan output (do not run WPScan again)'''
@@ -8,12 +9,23 @@ def run(url, resp=None):
     elif resp and isinstance(resp, dict) and 'wpscan_output' in resp:
         wpscan_data = resp['wpscan_output']
     if not wpscan_data:
+        # Load guide from help.json
+        help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+        guide = ""
+        try:
+            with open(help_file, 'r') as f:
+                help_data = json.load(f)
+                guide = help_data.get('check_05_wpscan', '')
+        except:
+            pass
+            
         return {
             'name': 'Scan with WPScan (Docker)',
             'status': 'error',
             'description': 'No WPScan output available to parse.',
             'evidence': None,
-            'risk': 2
+            'risk': 2,
+            'guide': guide
         }
     try:
         data = wpscan_data if isinstance(wpscan_data, dict) else json.loads(wpscan_data)
@@ -32,10 +44,22 @@ def run(url, resp=None):
         status = 'error'
         description = f'Could not parse WPScan output as JSON: {str(e)}'
         evidence = str(wpscan_data)[:1000]
+        
+    # Load guide from help.json
+    help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+    guide = ""
+    try:
+        with open(help_file, 'r') as f:
+            help_data = json.load(f)
+            guide = help_data.get('check_05_wpscan', '')
+    except:
+        pass
+        
     return {
         'name': 'Scan with WPScan (Docker)',
         'status': status,
         'description': description,
         'evidence': evidence,
-        'risk': 4
+        'risk': 4,
+        'guide': guide
     }

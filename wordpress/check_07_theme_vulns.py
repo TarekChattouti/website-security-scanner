@@ -1,4 +1,5 @@
 import json
+import os
 
 def run(url, resp=None):
     '''Parse WPScan output for main theme vulnerabilities'''
@@ -8,12 +9,23 @@ def run(url, resp=None):
     elif resp and isinstance(resp, dict) and 'wpscan_output' in resp:
         wpscan_data = resp['wpscan_output']
     if not wpscan_data:
+        # Load guide from help.json
+        help_file = os.path.join(os.path.dirname(__file__), 'help.json')
+        guide = ""
+        try:
+            with open(help_file, 'r') as f:
+                help_data = json.load(f)
+                guide = help_data.get('check_07_theme_vulns', '')
+        except:
+            pass
+            
         return {
             'name': 'Search for main theme vulnerabilities',
             'status': 'error',
             'description': 'No WPScan output available to parse.',
             'evidence': None,
-            'risk': 2
+            'risk': 2,
+            'guide': guide
         }
     try:
         data = wpscan_data if isinstance(wpscan_data, dict) else json.loads(wpscan_data)

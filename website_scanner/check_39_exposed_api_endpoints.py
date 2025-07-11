@@ -1,5 +1,8 @@
+
 import requests
 from urllib.parse import urljoin
+import os
+import json
 
 def run(url, resp=None):
     '''Discovery of exposed API endpoints (/api, /v1, etc.)'''
@@ -23,10 +26,19 @@ def run(url, resp=None):
     status = 'fail' if found else 'pass'
     # Risk: 3 (Medium) if exposed API endpoint, 1 (Info) if not
     risk = 3 if found else 1
+    # Load guide from help.json
+    help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+    try:
+        with open(help_path, 'r', encoding='utf-8') as f:
+            help_data = json.load(f)
+        guide = help_data.get('check_39_exposed_api_endpoints', '')
+    except Exception:
+        guide = ''
     return {
         'name': 'Discovery of exposed API endpoints',
         'status': status,
         'description': 'Detects exposed API endpoints (e.g., /api, /v1, /graphql)',
         'evidence': found if found else None,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

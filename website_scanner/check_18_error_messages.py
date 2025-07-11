@@ -1,5 +1,8 @@
+
 import requests
 from bs4 import BeautifulSoup
+import os
+import json
 
 def run(url, resp=None):
     '''Detect error messages in responses'''
@@ -8,11 +11,20 @@ def run(url, resp=None):
         try:
             resp = requests.get(url, timeout=7, verify=False)
         except Exception as e:
+            # Load guide from help.json
+            help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+            try:
+                with open(help_path, 'r', encoding='utf-8') as f:
+                    help_data = json.load(f)
+                guide = help_data.get('check_18_error_messages', '')
+            except Exception:
+                guide = ''
             return {
                 'name': 'Detect error messages in responses',
                 'status': 'error',
                 'description': 'Error fetching URL',
-                'evidence': str(e)
+                'evidence': str(e),
+                'guide': guide
             }
     # Common error message patterns
     error_patterns = [
@@ -32,10 +44,19 @@ def run(url, resp=None):
     status = 'fail' if found else 'pass'
     # Risk: 3 (Medium) if error messages found, 1 (Info) if not
     risk = 3 if found else 1
+    # Load guide from help.json
+    help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+    try:
+        with open(help_path, 'r', encoding='utf-8') as f:
+            help_data = json.load(f)
+        guide = help_data.get('check_18_error_messages', '')
+    except Exception:
+        guide = ''
     return {
         'name': 'Detect error messages in responses',
         'status': status,
         'description': 'Detects error messages in HTTP responses',
         'evidence': list(set(found)) if found else None,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }

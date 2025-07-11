@@ -1,5 +1,8 @@
+
 from bs4 import BeautifulSoup
 import requests
+import os
+import json
 
 
 def run(url, resp=None):
@@ -8,12 +11,21 @@ def run(url, resp=None):
         try:
             resp = requests.get(url, timeout=7, verify=False)
         except Exception as e:
+            # Load guide from help.json
+            help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+            try:
+                with open(help_path, 'r', encoding='utf-8') as f:
+                    help_data = json.load(f)
+                guide = help_data.get('check_34_file_upload', '')
+            except Exception:
+                guide = ''
             return {
                 'name': 'Detect file upload fields',
                 'status': 'error',
                 'description': 'Error fetching URL',
                 'evidence': str(e),
-                'risk': 1
+                'risk': 1,
+                'guide': guide
             }
     soup = BeautifulSoup(resp.text, 'html.parser')
     upload_forms = []
@@ -26,10 +38,19 @@ def run(url, resp=None):
             })
     status = 'fail' if upload_forms else 'pass'
     risk = 4 if upload_forms else 1
+    # Load guide from help.json
+    help_path = os.path.join(os.path.dirname(__file__), 'help.json')
+    try:
+        with open(help_path, 'r', encoding='utf-8') as f:
+            help_data = json.load(f)
+        guide = help_data.get('check_34_file_upload', '')
+    except Exception:
+        guide = ''
     return {
         'name': 'Detect file upload fields',
         'status': status,
         'description': 'Detects file upload forms',
         'evidence': upload_forms if upload_forms else None,
-        'risk': risk
+        'risk': risk,
+        'guide': guide
     }
